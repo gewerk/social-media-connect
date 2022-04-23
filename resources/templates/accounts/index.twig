@@ -1,0 +1,28 @@
+{% extends '_layouts/elementindex' %}
+
+{% set crumbs = [
+  {
+    label: 'Social Media Connect' | t('social-media-connect'),
+    url: url('social-media-connect'),
+  },
+] %}
+
+{% set title = 'Social Media Accounts' | t('social-media-connect') %}
+{% set elementType = 'Gewerk\\SocialMediaConnect\\Element\\Account' %}
+{% set selectedSubnavItem = 'accounts' %}
+
+{% block actionButton %}
+  <div>
+    <button id="sm-accounts-new-btn" type="button" class="btn menubtn sortmenubtn submit" data-icon="plus">{{ 'Add account' | t('social-media-connect') }}</button>
+
+    <div class="menu">
+      <ul class="padded">
+        {% for provider in craft.socialMediaConnect.getProviders() %}
+          <li><a href="{{ actionUrl('social-media-connect/accounts/connect', {
+            provider: provider.handle,
+          }) }}">{{ provider.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endblock %}

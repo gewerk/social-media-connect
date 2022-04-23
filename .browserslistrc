@@ -1,0 +1,9 @@
+# Supported browsers
+
+firefox esr
+firefox >= 80
+safari >= 13
+ios_saf >= 13
+chrome >= 85
+edge >= 85
+android >= 85

@@ -1,0 +1,54 @@
+{% extends 'social-media-connect/settings/_layout.twig' %}
+
+{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') %}
+
+{% set currentSettingsTab = 'providers' %}
+
+{% set crumbs = [
+  { label: 'Social Media Connect' | t('social-media-connect'), url: url('settings/plugins/social-media-connect') },
+] %}
+
+{% block actionButton %}
+  <a href="{{ url('settings/plugins/social-media-connect/providers/new') }}" class="btn submit add icon">{{ 'New Provider' | t('social-media-connect') }}</a>
+{% endblock %}
+
+{% block content %}
+  <div id="social-media-connect-providers"></div>
+{% endblock %}
+
+{% js %}
+  new Craft.VueAdminTable({
+    columns: [
+      { name: '__slot:title', title: Craft.t('app', 'Name') },
+      { name: 'type', title: Craft.t('app', 'Type'), callback: function(value) {
+        if (value.isMissing) {
+          return '<span class="error">' + value.label + '</span>';
+        }
+
+        return value.label;
+      } },
+      { name: 'enabled', title: Craft.t('formie', 'Enabled'), callback: function(value) {
+        if (value) {
+          return '<span class="status on"></span>' + Craft.t('formie', 'Enabled');
+        } else {
+          return '<span class="status"></span>' + Craft.t('formie', 'Disabled');
+        }
+      } },
+    ],
+    container: '#social-media-connect-providers',
+    emptyMessage: Craft.t('social-media-connect', 'No providers exist yet.'),
+    tableData: {{ providers | map(provider => {
+      id: provider.id,
+      title: provider.getName() | t('site'),
+      url: provider.cpEditUrl,
+      name: provider.getName() | t('site') | e,
+      enabled: provider.enabled,
+      type: {
+        isMissing: provider is missing,
+        label: provider is missing ? provider.expectedType : provider.displayName(),
+      },
+    }) | json_encode | raw }},
+    deleteAction: 'social-media-connect/providers/delete',
+    reorderAction: 'social-media-connect/providers/reorder',
+  });
+{% endjs %}

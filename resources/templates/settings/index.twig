@@ -1,0 +1,23 @@
+{% extends 'social-media-connect/settings/_layout.twig' %}
+
+{% import '_includes/forms' as forms %}
+
+{% set fullPageForm = true %}
+
+{% block content %}
+  {{ actionInput('plugins/save-plugin-settings') }}
+  {{ hiddenInput('pluginHandle', plugin.handle) }}
+  {{ redirectInput('settings') }}
+
+  {% namespace 'settings' %}
+    {{ forms.textField({
+      first: true,
+      label: 'Plugin Name' | t('social-media-connect'),
+      instructions: 'Plugin name in the navigation.' | t('social-media-connect'),
+      id: 'pluginName',
+      name: 'pluginName',
+      value: settings.pluginName,
+      autofocus: true,
+    }) }}
+  {% endnamespace %}
+{% endblock %}

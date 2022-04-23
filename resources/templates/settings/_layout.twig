@@ -1,0 +1,31 @@
+{% requireAdmin %}
+
+{% extends '_layouts/cp' %}
+
+{% set crumbs = [
+  { label: 'Settings' | t('app'), url: url('settings') },
+  { label: 'Plugins' | t('app'), url: url('settings/plugins') },
+] | merge(crumbs ?? []) %}
+
+{% set title = plugin.name %}
+{% set docTitle = title ~ ' - ' ~ 'Plugins' | t('app') %}
+
+{% set currentSettingsTab = currentSettingsTab ?? '' %}
+{% set settingsTabs = [
+  { handle: '', title: 'General' | t('social-media-connect') },
+  { handle: 'providers', title: 'Providers' | t('social-media-connect') },
+] %}
+
+{% block sidebar %}
+  <nav class="social-media-connect-settings-tabs">
+    <ul>
+      {% for settingsTab in settingsTabs %}
+        <li>
+          <a href="{{ url("settings/plugins/#{plugin.handle}/#{settingsTab.handle}" | trim('/', side='right')) }}"{% if currentSettingsTab == settingsTab.handle %} class="sel"{% endif %}>
+            {{- settingsTab.title -}}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endblock %}

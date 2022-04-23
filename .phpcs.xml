@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="PHP_CodeSniffer" xsi:noNamespaceSchemaLocation="phpcs.xsd">
+  <!-- Exclude the Composer Vendor directory. -->
+  <exclude-pattern>/vendor/*</exclude-pattern>
+
+  <!-- Exclude the Node Modules directory. -->
+  <exclude-pattern>/node_modules/*</exclude-pattern>
+
+  <!-- Include the Yii2 Coding Standard -->
+  <rule ref="Yii2" />
+
+  <!-- Warn about unused function parameters excepted in extended classes -->
+  <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter">
+    <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClass" />
+  </rule>
+
+  <!-- Warn about TODO: comments -->
+  <rule ref="Generic.Commenting.Todo" />
+</ruleset>
