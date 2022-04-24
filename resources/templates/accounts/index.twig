@@ -1,5 +1,7 @@
 {% extends '_layouts/elementindex' %}
 
+{% do view.registerAssetBundle('Gewerk\\SocialMediaConnect\\AssetBundle\\SharedCssAssetBundle') %}
+
 {% set crumbs = [
   {
     label: 'Social Media Connect' | t('social-media-connect'),
@@ -20,7 +22,7 @@
         {% for provider in craft.socialMediaConnect.getProviders() %}
           <li><a href="{{ actionUrl('social-media-connect/accounts/connect', {
             provider: provider.handle,
-          }) }}">{{ provider.name }}</a></li>
+          }) }}"><span class="smc-menu-icon" aria-hidden="true">{{ craft.socialMediaConnect.plugin.providers.getProviderIconSvg(provider) | raw }}</span>{{ provider.name }}</a></li>
         {% endfor %}
       </ul>
     </div>

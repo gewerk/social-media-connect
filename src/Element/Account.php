@@ -386,7 +386,15 @@ class Account extends Element
     {
         switch ($attribute) {
             case 'provider':
-                return Html::encode($this->getProvider()->getName());
+                $provider = $this->getProvider();
+                $providersService = Plugin::$plugin->getProviders();
+
+                return '<div class="smc-provider-label">' .
+                    '<span class="smc-provider-label__icon" aria-hidden="true">' .
+                    $providersService->getProviderIconSvg($provider) .
+                    '</span><span class="smc-provider-label__label">' .
+                    Html::encode($provider->getName()) .
+                    '</span></div>';
 
             case 'name':
                 return html_entity_decode($this->name);

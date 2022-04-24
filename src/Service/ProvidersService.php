@@ -379,4 +379,15 @@ class ProvidersService extends Component
             ]));
         }
     }
+
+    /**
+     * Returns the provider icon as svg string
+     *
+     * @param ProviderInterface $provider
+     * @return string
+     */
+    public function getProviderIconSvg(ProviderInterface $provider): string
+    {
+        return ComponentHelper::iconSvg($provider::icon(), $provider::displayName());
+    }
 }

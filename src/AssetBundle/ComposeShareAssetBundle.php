@@ -27,6 +27,7 @@ class ComposeShareAssetBundle extends AssetBundle
     public $depends = [
         CpAsset::class,
         VueAsset::class,
+        SharedCssAssetBundle::class,
     ];
 
     /** @inheritdoc */

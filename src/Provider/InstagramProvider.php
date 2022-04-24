@@ -43,6 +43,14 @@ class InstagramProvider extends AbstractProvider implements SupportsTokenRefresh
     /**
      * @inheritdoc
      */
+    public static function icon(): ?string
+    {
+        return '@social-media-connect/resources/icons/instagram.svg';
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getProviderClass(): string
     {
         return Instagram::class;

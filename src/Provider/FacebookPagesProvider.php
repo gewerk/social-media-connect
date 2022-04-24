@@ -50,6 +50,14 @@ class FacebookPagesProvider extends AbstractProvider implements ComposingCapabil
     /**
      * @inheritdoc
      */
+    public static function icon(): ?string
+    {
+        return '@social-media-connect/resources/icons/facebook.svg';
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getProviderClass(): string
     {
         return Facebook::class;

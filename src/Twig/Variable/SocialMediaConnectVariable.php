@@ -7,10 +7,16 @@
 
 namespace Gewerk\SocialMediaConnect\Twig\Variable;
 
+use craft\base\Component;
 use Gewerk\SocialMediaConnect\Plugin;
 
-class SocialMediaConnectVariable
+class SocialMediaConnectVariable extends Component
 {
+    public function getPlugin(): Plugin
+    {
+        return Plugin::$plugin;
+    }
+
     public function getProviders()
     {
         return Plugin::$plugin->getProviders()->getAllProviders();

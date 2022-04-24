@@ -8,6 +8,7 @@
 namespace Gewerk\SocialMediaConnect\Provider;
 
 use craft\base\SavableComponent;
+use craft\helpers\Component;
 use craft\helpers\UrlHelper;
 use Gewerk\SocialMediaConnect\Collection\AccountCollection;
 use Gewerk\SocialMediaConnect\Element\Account;
@@ -39,6 +40,14 @@ abstract class AbstractProvider extends SavableComponent implements ProviderInte
      * @var string
      */
     public $uid;
+
+    /**
+     * @inheritdoc
+     */
+    public static function icon(): ?string
+    {
+        return null;
+    }
 
     /**
      * @inheritDoc

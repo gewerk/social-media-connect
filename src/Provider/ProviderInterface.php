@@ -22,6 +22,13 @@ use Gewerk\SocialMediaConnect\Model\Token;
  */
 interface ProviderInterface extends SavableComponentInterface
 {
+    /**
+     * Returns the path to the providers’s SVG icon, or the actual SVG contents.
+     *
+     * @return string|null
+     */
+    public static function icon(): ?string;
+
     public function getName(): string;
     public function getHandle(): string;
     public function getEnabled(): bool;

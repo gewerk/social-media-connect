@@ -17,6 +17,7 @@ use craft\helpers\Json;
 use craft\web\View;
 use Gewerk\SocialMediaConnect\AssetBundle\ComposeShareAssetBundle;
 use Gewerk\SocialMediaConnect\Element\Account;
+use Gewerk\SocialMediaConnect\Plugin;
 use Gewerk\SocialMediaConnect\Provider\Capability\ComposingCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\Share\AbstractShare;
 use Gewerk\SocialMediaConnect\Record\Share;
@@ -116,6 +117,7 @@ class ShareService extends Component
                     'id' => $account->id,
                     'name' => $account->name,
                     'provider' => $account->getProvider()->getName(),
+                    'icon' => Plugin::$plugin->getProviders()->getProviderIconSvg($account->getProvider()),
                 ];
             }, $accounts),
         ], JSON_UNESCAPED_UNICODE);

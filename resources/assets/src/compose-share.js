@@ -163,6 +163,12 @@ Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
 
   accountSwitcher() {
     const $accountSwitcher = document.createElement('button');
+    const $accountSwitcherIcon = document.createElement('span');
+
+    $accountSwitcherIcon.className = 'smc-menu-icon';
+    $accountSwitcherIcon.ariaHidden = 'true';
+    $accountSwitcherIcon.innerHTML = this.currentAccount.icon;
+
     $accountSwitcher.type = 'button';
     $accountSwitcher.id = `${this.id}-account-switcher`;
     $accountSwitcher.className = 'btn menubtn';
@@ -175,10 +181,20 @@ Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
       },
     );
 
+    $accountSwitcher.insertBefore(
+      $accountSwitcherIcon,
+      $accountSwitcher.firstChild,
+    );
+
     const $accountsList = document.createElement('ul');
     this.settings.accounts.forEach((account) => {
       const $li = document.createElement('li');
       const $a = document.createElement('a');
+      const $icon = document.createElement('span');
+
+      $icon.className = 'smc-menu-icon';
+      $icon.ariaHidden = 'true';
+      $icon.innerHTML = account.icon;
 
       $a.dataset.accountId = account.id;
       $a.textContent = account.name;
@@ -186,6 +202,7 @@ Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
         account: account.name,
       });
 
+      $a.insertBefore($icon, $a.firstChild);
       $li.appendChild($a);
       $accountsList.appendChild($li);
     });
@@ -214,6 +231,14 @@ Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
         'Post to {account}',
         { account: account.name },
       );
+
+      const $icon = $selectedOption.querySelector('.smc-menu-icon');
+      if ($icon) {
+        $accountSwitcher.insertBefore(
+          $icon.cloneNode(true),
+          $accountSwitcher.firstChild,
+        );
+      }
 
       this.switchAccounts(account);
     });
