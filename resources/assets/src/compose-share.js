@@ -11,6 +11,7 @@ Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
     this.id = id;
     this.settings = settings;
     this.currentAccount = this.settings.accounts[0] || null;
+    this.draft = !!this.settings.draft;
     this.params = {
       entryId: this.settings.entryId,
       siteId: this.settings.siteId,
@@ -48,7 +49,7 @@ Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
     this.$submitButton.className = 'btn submit smc-compose-share__submit';
     this.$submitButton.textContent = Craft.t(
       'social-media-connect',
-      'Post to {account}',
+      this.draft ? 'Save post to {account}' : 'Post to {account}',
       {
         account: this.currentAccount.name,
       },
@@ -109,7 +110,9 @@ Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
             Craft.cp.displayNotice(
               Craft.t(
                 'social-media-connect',
-                'Successful posted to {account}',
+                this.draft
+                  ? 'Post to {account} was saved and will be published with the entry'
+                  : 'Successful posted to {account}',
                 {
                   account: this.currentAccount.name,
                 },
@@ -144,7 +147,7 @@ Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
     this.$submitButton.disabled = true;
     this.$submitButton.textContent = Craft.t(
       'social-media-connect',
-      'Post to {account}',
+      this.draft ? 'Save post to {account}' : 'Post to {account}',
       {
         account: account.name,
       },

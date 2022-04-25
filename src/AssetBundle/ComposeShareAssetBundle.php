@@ -54,6 +54,8 @@ class ComposeShareAssetBundle extends AssetBundle
             'Post to {account}',
             'Cancel',
             'Successful posted to {account}',
+            'Post to {account} was saved and will be published with the entry',
+            'Save post to {account}',
             'Use {account}',
         ]);
     }

@@ -7,11 +7,15 @@
 
 namespace Gewerk\SocialMediaConnect\Provider\Share;
 
+use Craft;
 use craft\base\SavableComponent;
 use craft\elements\Entry;
+use craft\helpers\DateTimeHelper;
+use craft\helpers\Json;
 use craft\validators\DateTimeValidator;
 use DateTime;
 use Gewerk\SocialMediaConnect\Element\Account;
+use yii\behaviors\AttributeTypecastBehavior;
 
 /**
  * Abstract base class for composed social media posts
@@ -51,12 +55,12 @@ abstract class AbstractShare extends SavableComponent
     public $postedAt = null;
 
     /**
-     * @var bool Successful posted
+     * @var bool|null Successful posted
      */
-    public $success = false;
+    public $success = null;
 
     /**
-     * @var array|null Response
+     * @var mixed|null Response
      */
     public $response = null;
 
@@ -64,6 +68,11 @@ abstract class AbstractShare extends SavableComponent
      * @var string|null Share URL
      */
     public $postUrl = null;
+
+    /**
+     * @var string|null UID
+     */
+    public $uid = null;
 
     /**
      * @var Entry|null
@@ -74,6 +83,22 @@ abstract class AbstractShare extends SavableComponent
      * @var Account|null
      */
     private $_account = null;
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+
+        foreach ($this->datetimeAttributes() as $attribute) {
+            if ($this->$attribute !== null) {
+                $this->$attribute = DateTimeHelper::toDateTime($this->$attribute);
+            }
+        }
+
+        $this->typecastAttributes();
+    }
 
     /**
      * Sets entry for this share
@@ -96,10 +121,11 @@ abstract class AbstractShare extends SavableComponent
     public function getEntry(): Entry
     {
         if ($this->_entry === null) {
-            $this->_entry = Entry::findOne([
-                'id' => $this->entryId,
-                'siteId' => $this->siteId,
-            ]);
+            $this->_entry = Craft::$app->getElements()->getElementById(
+                $this->entryId,
+                Entry::class,
+                $this->siteId
+            );
         }
 
         return $this->_entry;
@@ -131,6 +157,49 @@ abstract class AbstractShare extends SavableComponent
         }
 
         return $this->_account;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors(): array
+    {
+        $behaviors = parent::behaviors();
+
+        $behaviors['typecast'] = [
+            'class' => AttributeTypecastBehavior::class,
+            'attributeTypes' => [
+                'id' => AttributeTypecastBehavior::TYPE_INTEGER,
+                'entryId' => AttributeTypecastBehavior::TYPE_INTEGER,
+                'siteId' => AttributeTypecastBehavior::TYPE_INTEGER,
+                'accountId' => AttributeTypecastBehavior::TYPE_INTEGER,
+                'publishWithEntry' => AttributeTypecastBehavior::TYPE_BOOLEAN,
+                'success' => AttributeTypecastBehavior::TYPE_BOOLEAN,
+                'response' => function ($value) {
+                    return Json::decodeIfJson($value);
+                },
+                'postUrl' => AttributeTypecastBehavior::TYPE_STRING,
+                'uid' => AttributeTypecastBehavior::TYPE_STRING,
+            ],
+        ];
+
+        return $behaviors;
+    }
+
+    /**
+     * Returns the names of any attributes that should hold [[\DateTime]] values.
+     *
+     * @return string[]
+     */
+    public function datetimeAttributes(): array
+    {
+        $attributes = [];
+        $attributes[] = 'postAt';
+        $attributes[] = 'postedAt';
+        $attributes[] = 'dateCreated';
+        $attributes[] = 'dateUpdated';
+
+        return $attributes;
     }
 
     /**

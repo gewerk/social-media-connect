@@ -10,9 +10,11 @@ namespace Gewerk\SocialMediaConnect;
 use Craft;
 use craft\base\Plugin as BasePlugin;
 use craft\db\MigrationManager;
+use craft\elements\Entry;
 use craft\events\RebuildConfigEvent;
 use craft\events\RegisterTemplateRootsEvent;
 use craft\events\RegisterUrlRulesEvent;
+use craft\i18n\PhpMessageSource;
 use craft\services\ProjectConfig;
 use craft\web\Controller;
 use craft\web\Response;
@@ -77,7 +79,7 @@ class Plugin extends BasePlugin
 
         // Load translations
         Craft::$app->getI18n()->translations['social-media-connect'] = [
-            'class' => craft\i18n\PhpMessageSource::class,
+            'class' => PhpMessageSource::class,
             'sourceLanguage' => 'en',
             'basePath' => '@social-media-connect/resources/translations',
             'forceTranslation' => true,
@@ -115,6 +117,13 @@ class Plugin extends BasePlugin
         Craft::$app->getView()->hook(
             'cp.entries.edit.details',
             [$share, 'renderDetails']
+        );
+
+        // Push share job to queue on publication
+        Event::on(
+            Entry::class,
+            Entry::EVENT_AFTER_SAVE,
+            [$share, 'submitShareJob']
         );
     }
 

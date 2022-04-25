@@ -9,18 +9,24 @@ namespace Gewerk\SocialMediaConnect\Service;
 
 use Craft;
 use craft\base\Component;
+use craft\db\Query;
+use craft\db\Table;
 use craft\elements\Entry;
+use craft\events\ModelEvent;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Component as ComponentHelper;
 use craft\helpers\Db;
+use craft\helpers\ElementHelper;
 use craft\helpers\Json;
 use craft\web\View;
+use DateTime;
 use Gewerk\SocialMediaConnect\AssetBundle\ComposeShareAssetBundle;
 use Gewerk\SocialMediaConnect\Element\Account;
+use Gewerk\SocialMediaConnect\Job\PublishShare;
 use Gewerk\SocialMediaConnect\Plugin;
 use Gewerk\SocialMediaConnect\Provider\Capability\ComposingCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\Share\AbstractShare;
-use Gewerk\SocialMediaConnect\Record\Share;
+use Gewerk\SocialMediaConnect\Record;
 
 /**
  * Share service
@@ -29,6 +35,34 @@ use Gewerk\SocialMediaConnect\Record\Share;
  */
 class ShareService extends Component
 {
+    /**
+     * Returns a share by ID
+     *
+     * @param int $id
+     * @return AbstractShare|null
+     */
+    public function getShareById(int $id): ?AbstractShare
+    {
+        $shareRecord = $this->getShareBaseQuery()
+            ->where([
+                '[[social_media_connect_shares.id]]' => $id,
+            ])
+            ->one();
+
+        if ($shareRecord) {
+            // Resolve share type
+            $shareRecord['type'] = $shareRecord['type']::getShareModelClass();
+
+            /** @var AbstractShare $share */
+            return ComponentHelper::createComponent(
+                $shareRecord,
+                AbstractShare::class
+            );
+        }
+
+        return null;
+    }
+
     /**
      * Inits a share by entry and account
      *
@@ -47,7 +81,7 @@ class ShareService extends Component
 
         /** @var AbstractShare $share */
         $share = ComponentHelper::createComponent([
-            'type' => $provider->getShareModelClass(),
+            'type' => $provider::getShareModelClass(),
         ], AbstractShare::class);
 
         $share->setEntry($entry);
@@ -58,6 +92,7 @@ class ShareService extends Component
 
     /**
      * Saves a share
+     *
      * @param AbstractShare $share
      * @param bool $validate
      * @return bool
@@ -69,11 +104,11 @@ class ShareService extends Component
         }
 
         if ($share->id) {
-            $shareRecord = Share::findOne([
+            $shareRecord = Record\Share::findOne([
                 'id' => $share->id,
             ]);
         } else {
-            $shareRecord = new Share();
+            $shareRecord = new Record\Share();
         }
 
         $shareRecord->entryId = $share->entryId;
@@ -86,6 +121,98 @@ class ShareService extends Component
         $shareRecord->settings = $share->getSettings();
 
         return $shareRecord->save();
+    }
+
+    /**
+     * Publishes shares from pending entries after going live
+     *
+     * @return void
+     */
+    public function publishSharesFromPendingEntries(): void
+    {
+        // Check for any unpublished shares
+        $now = Db::prepareDateForDb(new DateTime());
+        $unpublishedShares = $this->getShareBaseQuery()
+            ->innerJoin(
+                Table::ELEMENTS_SITES,
+                [
+                    'AND',
+                    '[[elements_sites.id]] = [[social_media_connect_shares.entryId]]',
+                    '[[elements_sites.siteId]] = [[social_media_connect_shares.siteId]]',
+                ],
+            )
+            ->innerJoin(
+                Table::ELEMENTS,
+                '[[elements.id]] = [[elements_sites.id]]',
+            )
+            ->innerJoin(
+                Table::ENTRIES,
+                '[[entries.id]] = [[elements.id]]',
+            )
+            ->addSelect([
+                '[[social_media_connect_accounts.name]] AS accountName'
+            ])
+            ->where([
+                '[[social_media_connect_shares.publishWithEntry]]' => true,
+                '[[social_media_connect_shares.success]]' => null,
+                '[[elements.draftId]]' => null,
+                '[[elements.revisionId]]' => null,
+                '[[elements.enabled]]' => true,
+                '[[elements_sites.enabled]]' => true,
+            ])
+            ->andWhere([
+                'AND',
+                ['<=', '[[entries.postDate]]', $now],
+                [
+                    'OR',
+                    ['[[entries.expiryDate]]' => null],
+                    ['>', '[[entries.expiryDate]]', $now],
+                ],
+            ])
+            ->all();
+
+        foreach ($unpublishedShares as $unpublishedShare) {
+            Craft::$app->getQueue()->push(new PublishShare([
+                'shareId' => $unpublishedShare['id'],
+                'accountName' => $unpublishedShare['accountName'],
+            ]));
+        }
+    }
+
+    /**
+     * Submit share posting jobs to the queue after publishing
+     *
+     * @param ModelEvent $event
+     * @return void
+     */
+    public function submitShareJob(ModelEvent $event)
+    {
+        /** @var Entry $entry */
+        $entry = $event->sender;
+
+        if (ElementHelper::isDraftOrRevision($entry) || $entry->getStatus() !== Entry::STATUS_LIVE) {
+            return;
+        }
+
+        // Check for any unpublished shares
+        $unpublishedShares = $this->getShareBaseQuery()
+            ->addSelect([
+                '[[social_media_connect_accounts.name]] AS accountName'
+            ])
+            ->where([
+                '[[social_media_connect_shares.entryId]]' => $entry->id,
+                '[[social_media_connect_shares.siteId]]' => $entry->siteId,
+                '[[social_media_connect_shares.publishWithEntry]]' => true,
+                '[[social_media_connect_shares.success]]' => null,
+            ])
+            ->all();
+
+        foreach ($unpublishedShares as $unpublishedShare) {
+            Craft::$app->getQueue()->push(new PublishShare([
+                'shareId' => $unpublishedShare['id'],
+                'accountName' => $unpublishedShare['accountName'],
+            ]));
+        }
     }
 
     /**
@@ -112,6 +239,7 @@ class ShareService extends Component
             'entryId' => $entry->id,
             'canonicalId' => $entry->canonicalId,
             'siteId' => $entry->siteId,
+            'draft' => $entry->getIsUnpublishedDraft() || $entry->getStatus() !== Entry::STATUS_LIVE,
             'accounts' => array_map(function (Account $account) {
                 return [
                     'id' => $account->id,
@@ -129,5 +257,44 @@ class ShareService extends Component
             "new Craft.SocialMediaConnect.ComposeShare('smc-compose-share', {$settings});",
             View::POS_END
         );
+    }
+
+    /**
+     * Returns a base query for getting shares
+     *
+     * @return Query
+     */
+    private function getShareBaseQuery(): Query
+    {
+        return (new Query())
+            ->from(Record\Share::tableName())
+            ->select([
+                '[[social_media_connect_shares.id]]',
+                '[[social_media_connect_shares.entryId]]',
+                '[[social_media_connect_shares.siteId]]',
+                '[[social_media_connect_shares.accountId]]',
+                '[[social_media_connect_shares.postAt]]',
+                '[[social_media_connect_shares.postedAt]]',
+                '[[social_media_connect_shares.success]]',
+                '[[social_media_connect_shares.settings]]',
+                '[[social_media_connect_shares.response]]',
+                '[[social_media_connect_shares.postUrl]]',
+                '[[social_media_connect_shares.dateCreated]]',
+                '[[social_media_connect_shares.dateUpdated]]',
+                '[[social_media_connect_shares.uid]]',
+                '[[social_media_connect_providers.type]]',
+            ])
+            ->leftJoin(
+                Record\Account::tableName(),
+                '[[social_media_connect_accounts.id]] = [[social_media_connect_shares.accountId]]'
+            )
+            ->leftJoin(
+                Record\Token::tableName(),
+                '[[social_media_connect_tokens.id]] = [[social_media_connect_accounts.tokenId]]'
+            )
+            ->leftJoin(
+                Record\Provider::tableName(),
+                '[[social_media_connect_providers.id]] = [[social_media_connect_tokens.providerId]]'
+            );
     }
 }

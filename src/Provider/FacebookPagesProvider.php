@@ -66,7 +66,7 @@ class FacebookPagesProvider extends AbstractProvider implements ComposingCapabil
     /**
      * @inheritdoc
      */
-    public function getShareModelClass(): string
+    public static function getShareModelClass(): string
     {
         return FacebookPageShare::class;
     }

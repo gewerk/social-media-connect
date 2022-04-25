@@ -18,7 +18,7 @@ interface ComposingCapabilityInterface
      *
      * @return string
      */
-    public function getShareModelClass(): string;
+    public static function getShareModelClass(): string;
 
     /**
      * Returns if an account supports composing
