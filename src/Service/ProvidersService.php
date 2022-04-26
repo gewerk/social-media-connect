@@ -108,6 +108,7 @@ class ProvidersService extends Component
         $providers = [
             Provider\FacebookPagesProvider::class,
             Provider\InstagramProvider::class,
+            Provider\TwitterProvider::class,
         ];
 
         $event = new RegisterProvidersEvent([

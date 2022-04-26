@@ -21,11 +21,19 @@
   position: relative;
 }
 
+.smc-compose-share__twitter-link-preview {
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid #dadde1;
+}
+
+.smc-compose-share__twitter-link-preview-image,
 .smc-compose-share__facebook-link-preview-image {
   aspect-ratio: 600 / 315;
   position: relative;
 }
 
+.smc-compose-share__twitter-link-preview-img,
 .smc-compose-share__facebook-link-preview-img {
   bottom: 0;
   height: 100%;
@@ -37,6 +45,10 @@
   width: 100%;
 }
 
+.smc-compose-share__twitter-link-preview-content {
+  padding: 13px;
+}
+
 .smc-compose-share__facebook-link-preview-content {
   background-color: #f2f3f6;
   border: 1px solid #dadde1;
@@ -45,6 +57,16 @@
   .smc-compose-share__facebook-link-preview-image + & {
     border-top: 0;
   }
+}
+
+.smc-compose-share__twitter-link-preview-domain {
+  color: #71767b;
+  font-size: 17px;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .smc-compose-share__facebook-link-preview-domain {
@@ -59,12 +81,21 @@
   white-space: nowrap;
 }
 
+.smc-compose-share__twitter-link-preview-title {
+  color: #000;
+  font-size: 17px;
+  font-weight: bold;
+  line-height: 22px;
+  margin: 4px 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .smc-compose-share__facebook-link-preview-title {
   color: #1d2129;
   font-size: 16px;
-  font-size: 16px;
   font-weight: bold;
-  line-height: 20px;
   line-height: 20px;
   margin: 5px 0 0;
   overflow: hidden;

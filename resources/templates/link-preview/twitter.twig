@@ -1,0 +1,13 @@
+<div class="smc-compose-share__twitter-link-preview">
+  {% if metadata.images %}
+    {% set image = metadata.images[0] %}
+    <div class="smc-compose-share__twitter-link-preview-image">
+      <img src="{{ image.url }}" class="smc-compose-share__twitter-link-preview-img" />
+    </div>
+  {% endif %}
+
+  <div class="smc-compose-share__twitter-link-preview-content">
+    <p class="smc-compose-share__twitter-link-preview-domain">{{ domain }}</p>
+    <p class="smc-compose-share__twitter-link-preview-title">{{ metadata.title }}</p>
+  </div>
+</div>
