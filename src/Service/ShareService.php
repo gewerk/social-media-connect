@@ -240,14 +240,12 @@ class ShareService extends Component
             'canonicalId' => $entry->canonicalId,
             'siteId' => $entry->siteId,
             'draft' => $entry->getIsUnpublishedDraft() || $entry->getStatus() !== Entry::STATUS_LIVE,
-            'accounts' => array_map(function (Account $account) {
-                return [
-                    'id' => $account->id,
-                    'name' => $account->name,
-                    'provider' => $account->getProvider()->getName(),
-                    'icon' => Plugin::$plugin->getProviders()->getProviderIconSvg($account->getProvider()),
-                ];
-            }, $accounts),
+            'accounts' => array_map(fn (Account $account) => [
+                'id' => $account->id,
+                'name' => $account->name,
+                'provider' => $account->getProvider()->getName(),
+                'icon' => Plugin::$plugin->getProviders()->getProviderIconSvg($account->getProvider()),
+            ], $accounts),
         ], JSON_UNESCAPED_UNICODE);
 
         // Load assets

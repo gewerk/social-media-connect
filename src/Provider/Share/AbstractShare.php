@@ -175,9 +175,7 @@ abstract class AbstractShare extends SavableComponent
                 'accountId' => AttributeTypecastBehavior::TYPE_INTEGER,
                 'publishWithEntry' => AttributeTypecastBehavior::TYPE_BOOLEAN,
                 'success' => AttributeTypecastBehavior::TYPE_BOOLEAN,
-                'response' => function ($value) {
-                    return Json::decodeIfJson($value);
-                },
+                'response' => fn ($value) => Json::decodeIfJson($value),
                 'postUrl' => AttributeTypecastBehavior::TYPE_STRING,
                 'uid' => AttributeTypecastBehavior::TYPE_STRING,
             ],

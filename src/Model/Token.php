@@ -91,13 +91,7 @@ class Token extends Model
                 'identifier' => AttributeTypecastBehavior::TYPE_STRING,
                 'token' => AttributeTypecastBehavior::TYPE_STRING,
                 'refreshToken' => AttributeTypecastBehavior::TYPE_INTEGER,
-                'scopes' => function ($value) {
-                    if (!is_array($value)) {
-                        return explode(',', (string) $value);
-                    }
-
-                    return $value;
-                },
+                'scopes' => fn ($value) => !is_array($value) ? explode(',', (string) $value) : $value,
                 'uid' => AttributeTypecastBehavior::TYPE_STRING,
             ],
         ];
