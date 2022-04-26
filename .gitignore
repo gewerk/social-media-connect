@@ -1,3 +1,4 @@
 yarn-error.log
 vendor
 node_modules
+composer.lock
