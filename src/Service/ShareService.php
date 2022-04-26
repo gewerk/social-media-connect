@@ -19,10 +19,13 @@ use craft\helpers\Component as ComponentHelper;
 use craft\helpers\Db;
 use craft\helpers\ElementHelper;
 use craft\helpers\Json;
+use craft\helpers\UrlHelper;
 use craft\web\View;
 use DateTime;
+use Fusonic\OpenGraph\Objects\ObjectBase;
 use Gewerk\SocialMediaConnect\AssetBundle\ComposeShareAssetBundle;
 use Gewerk\SocialMediaConnect\Element\Account;
+use Gewerk\SocialMediaConnect\Helper\OpenGraphHelper;
 use Gewerk\SocialMediaConnect\Job\PublishShare;
 use Gewerk\SocialMediaConnect\Plugin;
 use Gewerk\SocialMediaConnect\Provider\Capability\ComposingCapabilityInterface;
@@ -272,6 +275,31 @@ class ShareService extends Component
             "new Craft.SocialMediaConnect.ComposeShare('smc-compose-share', {$settings});",
             View::POS_END
         );
+    }
+
+    /**
+     * Returns the live metadata for an entry
+     *
+     * @param Entry $entry
+     * @return ObjectBase|null
+     */
+    public function getMetadataFromEntryPreview(Entry $entry): ?ObjectBase
+    {
+        // Get preview URL for open graph meta data
+        $token = Craft::$app->getTokens()->createPreviewToken([
+            'preview/preview', [
+                'elementType' => Entry::class,
+                'sourceId' => $entry->canonicalId,
+                'siteId' => $entry->siteId,
+                'draftId' => $entry->draftId,
+                'revisionId' => $entry->revisionId,
+                'userId' => Craft::$app->getUser()->getId(),
+            ],
+        ], null);
+
+        $url = UrlHelper::urlWithToken($entry->getUrl(), $token);
+
+        return OpenGraphHelper::getMetadata($url);
     }
 
     /**

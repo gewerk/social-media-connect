@@ -42,7 +42,7 @@ Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
 
   showComposer() {
     this.$body = document.createElement('div');
-    this.$body.className = 'smc-compose-share__body body';
+    this.$body.className = 'smc-compose-share__body';
 
     this.$submitButton = document.createElement('button');
     this.$submitButton.type = 'submit';

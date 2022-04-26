@@ -14,6 +14,7 @@ use DateTime;
 use Gewerk\SocialMediaConnect\Collection\AccountCollection;
 use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Model\Token;
+use Gewerk\SocialMediaConnect\Plugin;
 use Gewerk\SocialMediaConnect\Provider\Capability\ComposingCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\OAuth2\AbstractProvider;
 use Gewerk\SocialMediaConnect\Provider\Share\AbstractShare;
@@ -112,12 +113,24 @@ class FacebookPagesProvider extends AbstractProvider implements ComposingCapabil
         /** @var FacebookPageShare $share */
 
         $fields = [];
+
         $fields[] = Cp::textareaFieldHtml([
             'label' => Craft::t('social-media-connect', 'Message'),
             'name' => 'message',
             'value' => $share->message,
             'errors' => $share->getErrors('message'),
         ]);
+
+        // Render an open graph preview
+        $view = Craft::$app->getView();
+        $metadata = Plugin::$plugin->getShare()->getMetadataFromEntryPreview($share->getEntry());
+        $fields[] = $view->renderTemplate(
+            'social-media-connect/link-preview/facebook',
+            [
+                'domain' => parse_url($metadata->url, PHP_URL_HOST),
+                'metadata' => $metadata,
+            ],
+        );
 
         return implode("\n", $fields);
     }
