@@ -12,6 +12,7 @@ use craft\base\Component;
 use craft\db\Query;
 use craft\db\Table;
 use craft\elements\Entry;
+use craft\events\DraftEvent;
 use craft\events\ModelEvent;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Component as ComponentHelper;
@@ -180,6 +181,22 @@ class ShareService extends Component
     }
 
     /**
+     * Move shares from a draft to its canonical version
+     *
+     * @param DraftEvent $event
+     * @return void
+     */
+    public function moveDraftShares(DraftEvent $event)
+    {
+        // Move an draft shares to canonical element
+        Db::update(
+            Record\Share::tableName(),
+            ['entryId' => $event->draft->getCanonicalId()],
+            ['entryId' => $event->draft->getId()]
+        );
+    }
+
+    /**
      * Submit share posting jobs to the queue after publishing
      *
      * @param ModelEvent $event
@@ -239,7 +256,7 @@ class ShareService extends Component
             'entryId' => $entry->id,
             'canonicalId' => $entry->canonicalId,
             'siteId' => $entry->siteId,
-            'draft' => $entry->getIsUnpublishedDraft() || $entry->getStatus() !== Entry::STATUS_LIVE,
+            'draft' => $entry->getIsDraft() || $entry->getStatus() !== Entry::STATUS_LIVE,
             'accounts' => array_map(fn (Account $account) => [
                 'id' => $account->id,
                 'name' => $account->name,

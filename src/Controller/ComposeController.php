@@ -43,11 +43,12 @@ class ComposeController extends Controller
 
         if ($share->validate()) {
             $success = true;
-            $isUnpublishedDraft = $share->getEntry()->getIsUnpublishedDraft();
-            $isLive = $share->getEntry()->getStatus() === Entry::STATUS_LIVE;
+            $entry = $share->getEntry();
+            $isDraft = $entry->getIsDraft();
+            $isLive = $entry->getStatus() === Entry::STATUS_LIVE;
 
             // Publish directly if entry is live and not an unpublished draft
-            if ($isLive && !$isUnpublishedDraft) {
+            if ($isLive && !$isDraft) {
                 $share = $provider->publishShare($share);
                 $success = $share->success;
             }
@@ -100,12 +101,11 @@ class ComposeController extends Controller
      */
     private function createShareFromRequest(): AbstractShare
     {
-        $entry = Entry::find()
-            ->id($this->request->getRequiredBodyParam('entryId'))
-            ->siteId($this->request->getRequiredBodyParam('siteId'))
-            ->anyStatus()
-            ->drafts(null)
-            ->one();
+        $entry = Craft::$app->getElements()->getElementById(
+            $this->request->getRequiredBodyParam('entryId'),
+            Entry::class,
+            $this->request->getRequiredBodyParam('siteId')
+        );
 
         $account = Account::findOne([
             'id' => $this->request->getRequiredBodyParam('accountId'),

@@ -15,6 +15,7 @@ use craft\events\RebuildConfigEvent;
 use craft\events\RegisterTemplateRootsEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\i18n\PhpMessageSource;
+use craft\services\Drafts;
 use craft\services\ProjectConfig;
 use craft\web\Controller;
 use craft\web\Response;
@@ -120,6 +121,12 @@ class Plugin extends BasePlugin
         );
 
         // Push share job to queue on publication
+        Event::on(
+            Drafts::class,
+            Drafts::EVENT_BEFORE_APPLY_DRAFT,
+            [$share, 'moveDraftShares']
+        );
+
         Event::on(
             Entry::class,
             Entry::EVENT_AFTER_SAVE,
