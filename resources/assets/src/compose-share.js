@@ -6,7 +6,7 @@ if (typeof Craft.SocialMediaConnect === typeof undefined) {
   Craft.SocialMediaConnect = {};
 }
 
-// Add input field to Craft global
+// Add interface to our global variable
 Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
   init(id, settings) {
     this.id = id;
@@ -120,6 +120,9 @@ Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
                 },
               ),
             );
+
+            const event = new Event('social-media-connect:new-share');
+            document.dispatchEvent(event);
           } else {
             this.$body.innerHTML = response.fields;
 

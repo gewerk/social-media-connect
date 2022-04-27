@@ -182,6 +182,38 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
     /**
      * @inheritdoc
      */
+    public function getShareErrorMessage(AbstractShare $share): string
+    {
+        return $share->response['title'] ?? 'Unknown error';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function defineShareAttributes(AbstractShare $share): array
+    {
+        return [
+            'message' => Craft::t('social-media-connect', 'Message'),
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getShareAttributeHtml(AbstractShare $share, string $attribute): string
+    {
+        switch ($attribute) {
+            case 'message':
+                return $share->message;
+
+            default:
+                return '';
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getIdentifier(Token $token): string
     {
         // Query current token user

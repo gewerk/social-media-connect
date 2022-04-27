@@ -1,0 +1,69 @@
+<ul class="smc-entry-share-counter__shares">
+  {% for share in shares|reverse %}
+    <li class="smc-entry-share-counter__share">
+      <div class="smc-entry-share-counter__share-status">
+        <div class="status{% if share.success is not same as(null) %} {{ share.success ? 'green' : 'red' }}{% endif %}"></div>
+      </div>
+
+      <div class="smc-entry-share-counter__share-content">
+        <div class="smc-entry-share-counter__share-account">
+          <span class="smc-entry-share-counter__share-account-icon" aria-hidden="true">
+            {{- craft.socialMediaConnect.plugin.providers.getProviderIconSvg(share.account.provider) | raw -}}
+          </span>
+
+          <span class="smc-entry-share-counter__share-account-title">
+            {{ share.account.name }}
+          </span>
+
+          <span class="smc-entry-share-counter__share-account-action">
+            {% if share.success is same as(true) and share.postUrl %}
+              <a href="{{ share.postUrl }}" class="btn small" data-icon="share" target="_blank" rel="noopener" title="{{ 'Show post' | t('social-media-connect') }}"></a>
+            {% elseif share.success is same as(null) %}
+              <button type="button" data-delete-share-id="{{ share.id }}" class="btn small" data-icon="trash" title="{{ 'Delete share' | t('social-media-connect') }}"></button>
+            {% endif %}
+          </span>
+        </div>
+
+        {% if share.success is same as(true) %}
+          <div class="smc-entry-share-counter__share-account-date">
+            {{ 'Published on {date}' | t('social-media-connect', {
+              date: share.postedAt | datetime,
+            }) }}
+          </div>
+        {% elseif share.success is same as(false) %}
+          <div class="smc-entry-share-counter__share-account-date">
+            {{ 'Tried to publish on {date}' | t('social-media-connect', {
+              date: share.postedAt | datetime,
+            }) }}
+          </div>
+
+          <div class="smc-entry-share-counter__share-account-error">
+            {{- share.account.provider.getShareErrorMessage(share) -}}
+          </div>
+        {% elseif share.success is same as(null) %}
+          <div class="smc-entry-share-counter__share-account-date">
+            {{ 'Will be published with the entry' | t('social-media-connect') }}
+          </div>
+        {% endif %}
+
+        {% set attributes = share.account.provider.defineShareAttributes(share) %}
+
+        {% if attributes %}
+          <dl class="smc-entry-share-counter__share-account-details">
+            {% for attribute, label in attributes %}
+              <div class="smc-entry-share-counter__share-account-detail">
+                <dt class="smc-entry-share-counter__share-account-detail-label">
+                  {{- label -}}
+                <dt>
+
+                <dd class="smc-entry-share-counter__share-account-detail-value">
+                  {{- share.account.provider.getShareAttributeHtml(share, attribute) | raw -}}
+                <dd>
+              </div>
+            {% endfor %}
+          </dl>
+        {% endif %}
+      </div>
+    </li>
+  {% endfor %}
+</ul>

@@ -90,6 +90,25 @@ class ShareService extends Component
     }
 
     /**
+     * Get count of shares by entry
+     *
+     * @param Entry $entry
+     * @return int
+     */
+    public function getCountOfSharesByEntry(Entry $entry): int
+    {
+        return $shareRecords = $this->getShareBaseQuery()
+            ->where([
+                '[[social_media_connect_shares.entryId]]' => array_unique([
+                    $entry->canonicalId,
+                    $entry->id,
+                ]),
+                '[[social_media_connect_shares.siteId]]' => $entry->siteId,
+            ])
+            ->count();
+    }
+
+    /**
      * Inits a share by entry and account
      *
      * @param Entry $entry
@@ -147,6 +166,24 @@ class ShareService extends Component
         $shareRecord->settings = $share->getSettings();
 
         return $shareRecord->save();
+    }
+
+    /**
+     * Deletes a share
+     *
+     * @param AbstractShare $share
+     * @return bool
+     */
+    public function deleteShare(AbstractShare $share): bool
+    {
+        $affectedRows = Db::deleteIfExists(
+            Record\Share::tableName(),
+            [
+                'id' => $share->id,
+            ]
+        );
+
+        return $affectedRows > 0;
     }
 
     /**

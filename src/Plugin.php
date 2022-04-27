@@ -120,6 +120,12 @@ class Plugin extends BasePlugin
             [EntryHooks::class, 'renderComposeShare']
         );
 
+        // Render the entry share counter
+        Craft::$app->getView()->hook(
+            'cp.entries.edit.meta',
+            [EntryHooks::class, 'renderEntryShareCounter']
+        );
+
         // Move draft shares before merging draft with its canonical element
         Event::on(
             Drafts::class,

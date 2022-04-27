@@ -1,0 +1,82 @@
+@import '~@craftcms/sass/mixins';
+
+.smc-entry-share-counter__value {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.smc-entry-share-counter__value-btn {
+  border-radius: 3px;
+  color: #596673;
+  height: 17px;
+  line-height: 16px;
+  padding: 0;
+  width: 30px;
+}
+
+.smc-entry-share-counter__share {
+  display: flex;
+
+  & + & {
+    border-top: 1px solid $mediumHairlineColor;
+    margin-top: 20px;
+    padding-top: 20px;
+  }
+}
+
+.smc-entry-share-counter__share-account {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  font-weight: bold;
+}
+
+.smc-entry-share-counter__share-content {
+  flex-grow: 1;
+}
+
+.smc-entry-share-counter__share-account-icon {
+  @include svg-mask($textColor);
+
+  line-height: 0;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.smc-entry-share-counter__share-account-action {
+  margin-left: auto;
+}
+
+.smc-entry-share-counter__share-account-date {
+  color: $lightTextColor;
+  margin-top: 5px;
+}
+
+.smc-entry-share-counter__share-account-error {
+  margin-top: 5px;
+  color: $errorColor;
+}
+
+.smc-entry-share-counter__share-account-details {
+  margin-top: 5px;
+}
+
+.smc-entry-share-counter__share-account-detail {
+  font-size: 14px;
+
+  & + & {
+    margin-top: 5px;
+  }
+}
+
+.smc-entry-share-counter__share-account-detail-label {
+  font-weight: bold;
+}
+
+.smc-entry-share-counter__share-account-detail-value {
+  color: $lightTextColor;
+}

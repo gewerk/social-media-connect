@@ -6,6 +6,7 @@ module.exports = getConfig({
   config: {
     entry: {
       'compose-share': './compose-share.js',
+      'entry-share-counter': './entry-share-counter.js',
       'social-media-connect': './social-media-connect.scss',
     },
   },

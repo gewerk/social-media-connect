@@ -43,4 +43,29 @@ interface ComposingCapabilityInterface
      * @return AbstractShare
      */
     public function publishShare(AbstractShare $share): AbstractShare;
+
+    /**
+     * Returns the error message if an share has failed to be published.
+     *
+     * @param AbstractShare $share
+     * @return string
+     */
+    public function getShareErrorMessage(AbstractShare $share): string;
+
+    /**
+     * Returns the list of attributes to be rendered of a share
+     *
+     * @param AbstractShare $share
+     * @return string[]
+     */
+    public function defineShareAttributes(AbstractShare $share): array;
+
+    /**
+     * Returns html for an attribute of a share
+     *
+     * @param AbstractShare $share
+     * @param string $attribute
+     * @return string
+     */
+    public function getShareAttributeHtml(AbstractShare $share, string $attribute): string;
 }

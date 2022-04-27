@@ -16,6 +16,7 @@ use craft\helpers\ElementHelper;
 use craft\helpers\Json;
 use craft\web\View;
 use Gewerk\SocialMediaConnect\AssetBundle\ComposeShareAssetBundle;
+use Gewerk\SocialMediaConnect\AssetBundle\EntryShareCounterAssetBundle;
 use Gewerk\SocialMediaConnect\Job\PublishShare;
 use Gewerk\SocialMediaConnect\Plugin;
 use Gewerk\SocialMediaConnect\Record;
@@ -54,6 +55,42 @@ class EntryHooks
             "new Craft.SocialMediaConnect.ComposeShare('smc-compose-share', {$settings});",
             View::POS_END
         );
+    }
+
+    /**
+     * Renders the entry share counter component inside an entry meta interface
+     *
+     * @param array $context
+     * @return string
+     */
+    public static function renderEntryShareCounter(array &$context)
+    {
+        // Get entry from context
+        /** @var Entry */
+        $entry = $context['entry'];
+
+        // Build settings
+        $settings = Json::encode([
+            'entryId' => $entry->id,
+            'canonicalId' => $entry->canonicalId,
+            'siteId' => $entry->siteId,
+        ], JSON_UNESCAPED_UNICODE);
+
+        // Load assets
+        $view = Craft::$app->getView();
+        $view->registerAssetBundle(EntryShareCounterAssetBundle::class);
+        $view->registerJs(
+            "new Craft.SocialMediaConnect.EntryShareCounter('entry-share-counter', {$settings});",
+            View::POS_END
+        );
+
+        // Get counter
+        $count = Plugin::$plugin->getShare()->getCountOfSharesByEntry($entry);
+
+        // Render template
+        return $view->renderTemplate('social-media-connect/entry-share-counter/hook.twig', [
+            'count' => $count,
+        ]);
     }
 
     /**
