@@ -22,6 +22,7 @@ use craft\web\Response;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use craft\web\View;
+use Gewerk\SocialMediaConnect\Hooks\EntryHooks;
 use Gewerk\SocialMediaConnect\Model\Settings;
 use Gewerk\SocialMediaConnect\Service\ProvidersService;
 use Gewerk\SocialMediaConnect\Twig\Variable\SocialMediaConnectVariable;
@@ -114,23 +115,23 @@ class Plugin extends BasePlugin
         $this->registerProjectConfigListeners();
 
         // Render the posting interface
-        $share = $this->getShare();
         Craft::$app->getView()->hook(
-            'cp.entries.edit.details',
-            [$share, 'renderDetails']
+            'cp.entries.edit',
+            [EntryHooks::class, 'renderComposeShare']
+        );
+
+        // Move draft shares before merging draft with its canonical element
+        Event::on(
+            Drafts::class,
+            Drafts::EVENT_BEFORE_APPLY_DRAFT,
+            [EntryHooks::class, 'moveDraftShares']
         );
 
         // Push share job to queue on publication
         Event::on(
-            Drafts::class,
-            Drafts::EVENT_BEFORE_APPLY_DRAFT,
-            [$share, 'moveDraftShares']
-        );
-
-        Event::on(
             Entry::class,
             Entry::EVENT_AFTER_SAVE,
-            [$share, 'submitShareJob']
+            [EntryHooks::class, 'submitShareJob']
         );
     }
 

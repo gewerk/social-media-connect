@@ -1,3 +1,4 @@
+/* global socialMediaConnectComposingAccounts */
 import './compose-share.scss';
 
 // Add extension
@@ -10,7 +11,8 @@ Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
   init(id, settings) {
     this.id = id;
     this.settings = settings;
-    this.currentAccount = this.settings.accounts[0] || null;
+    this.accounts = socialMediaConnectComposingAccounts || [];
+    this.currentAccount = this.accounts[0] || null;
     this.draft = !!this.settings.draft;
     this.params = {
       entryId: this.settings.entryId,
@@ -190,7 +192,7 @@ Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
     );
 
     const $accountsList = document.createElement('ul');
-    this.settings.accounts.forEach((account) => {
+    this.accounts.forEach((account) => {
       const $li = document.createElement('li');
       const $a = document.createElement('a');
       const $icon = document.createElement('span');
@@ -224,7 +226,7 @@ Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
 
     menu.on('optionselect', (event) => {
       const { selectedOption: $selectedOption } = event;
-      const account = this.settings.accounts.find(
+      const account = this.accounts.find(
         (account) => account.id == $selectedOption.dataset.accountId,
       );
 

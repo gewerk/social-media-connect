@@ -7,10 +7,13 @@
 
 namespace Gewerk\SocialMediaConnect\AssetBundle;
 
+use craft\helpers\ArrayHelper;
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
 use craft\web\assets\vue\VueAsset;
 use craft\web\View;
+use Gewerk\SocialMediaConnect\Element\Account;
+use Gewerk\SocialMediaConnect\Plugin;
 
 /**
  * Asset bundle for loading the Vue component with style for the posting
@@ -47,6 +50,20 @@ class ComposeShareAssetBundle extends AssetBundle
     {
         /** @var View $view */
         parent::registerAssetFiles($view);
+
+        // Get accounts which support composing
+        $accounts = ArrayHelper::where(
+            Account::findAll(),
+            'supportsComposing',
+            true
+        );
+
+        $view->registerJsVar('socialMediaConnectComposingAccounts', array_map(fn (Account $account) => [
+            'id' => $account->id,
+            'name' => $account->name,
+            'provider' => $account->getProvider()->getName(),
+            'icon' => Plugin::$plugin->getProviders()->getProviderIconSvg($account->getProvider()),
+        ], $accounts));
 
         // Plugin translations
         $view->registerTranslations('social-media-connect', [

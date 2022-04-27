@@ -12,22 +12,14 @@ use craft\base\Component;
 use craft\db\Query;
 use craft\db\Table;
 use craft\elements\Entry;
-use craft\events\DraftEvent;
-use craft\events\ModelEvent;
-use craft\helpers\ArrayHelper;
 use craft\helpers\Component as ComponentHelper;
 use craft\helpers\Db;
-use craft\helpers\ElementHelper;
-use craft\helpers\Json;
 use craft\helpers\UrlHelper;
-use craft\web\View;
 use DateTime;
 use Fusonic\OpenGraph\Objects\ObjectBase;
-use Gewerk\SocialMediaConnect\AssetBundle\ComposeShareAssetBundle;
 use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Helper\OpenGraphHelper;
 use Gewerk\SocialMediaConnect\Job\PublishShare;
-use Gewerk\SocialMediaConnect\Plugin;
 use Gewerk\SocialMediaConnect\Provider\Capability\ComposingCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\Share\AbstractShare;
 use Gewerk\SocialMediaConnect\Record;
@@ -65,6 +57,36 @@ class ShareService extends Component
         }
 
         return null;
+    }
+
+    /**
+     * Get all shares by entry
+     *
+     * @param Entry $entry
+     * @return array
+     */
+    public function getSharesByEntry(Entry $entry): array
+    {
+        $shareRecords = $this->getShareBaseQuery()
+            ->where([
+                '[[social_media_connect_shares.entryId]]' => array_unique([
+                    $entry->canonicalId,
+                    $entry->id,
+                ]),
+                '[[social_media_connect_shares.siteId]]' => $entry->siteId,
+            ])
+            ->all();
+
+        return array_map(function ($shareRecord) {
+            // Resolve share type
+            $shareRecord['type'] = $shareRecord['type']::getShareModelClass();
+
+            /** @var AbstractShare $share */
+            return ComponentHelper::createComponent(
+                $shareRecord,
+                AbstractShare::class
+            );
+        }, $shareRecords);
     }
 
     /**
@@ -184,100 +206,6 @@ class ShareService extends Component
     }
 
     /**
-     * Move shares from a draft to its canonical version
-     *
-     * @param DraftEvent $event
-     * @return void
-     */
-    public function moveDraftShares(DraftEvent $event)
-    {
-        // Move an draft shares to canonical element
-        Db::update(
-            Record\Share::tableName(),
-            ['entryId' => $event->draft->getCanonicalId()],
-            ['entryId' => $event->draft->getId()]
-        );
-    }
-
-    /**
-     * Submit share posting jobs to the queue after publishing
-     *
-     * @param ModelEvent $event
-     * @return void
-     */
-    public function submitShareJob(ModelEvent $event)
-    {
-        /** @var Entry $entry */
-        $entry = $event->sender;
-
-        if (ElementHelper::isDraftOrRevision($entry) || $entry->getStatus() !== Entry::STATUS_LIVE) {
-            return;
-        }
-
-        // Check for any unpublished shares
-        $unpublishedShares = $this->getShareBaseQuery()
-            ->addSelect([
-                '[[social_media_connect_accounts.name]] AS accountName'
-            ])
-            ->where([
-                '[[social_media_connect_shares.entryId]]' => $entry->id,
-                '[[social_media_connect_shares.siteId]]' => $entry->siteId,
-                '[[social_media_connect_shares.publishWithEntry]]' => true,
-                '[[social_media_connect_shares.success]]' => null,
-            ])
-            ->all();
-
-        foreach ($unpublishedShares as $unpublishedShare) {
-            Craft::$app->getQueue()->push(new PublishShare([
-                'shareId' => $unpublishedShare['id'],
-                'accountName' => $unpublishedShare['accountName'],
-            ]));
-        }
-    }
-
-    /**
-     * Renders list of shares in entry context
-     *
-     * @param array $context
-     * @return void
-     */
-    public function renderDetails(array &$context)
-    {
-        // Get entry from context
-        /** @var Entry */
-        $entry = $context['entry'];
-
-        // Get accounts which support composing
-        $accounts = ArrayHelper::where(
-            Account::findAll(),
-            'supportsComposing',
-            true
-        );
-
-        // Build settings
-        $settings = Json::encode([
-            'entryId' => $entry->id,
-            'canonicalId' => $entry->canonicalId,
-            'siteId' => $entry->siteId,
-            'draft' => $entry->getIsDraft() || $entry->getStatus() !== Entry::STATUS_LIVE,
-            'accounts' => array_map(fn (Account $account) => [
-                'id' => $account->id,
-                'name' => $account->name,
-                'provider' => $account->getProvider()->getName(),
-                'icon' => Plugin::$plugin->getProviders()->getProviderIconSvg($account->getProvider()),
-            ], $accounts),
-        ], JSON_UNESCAPED_UNICODE);
-
-        // Load assets
-        $view = Craft::$app->getView();
-        $view->registerAssetBundle(ComposeShareAssetBundle::class);
-        $view->registerJs(
-            "new Craft.SocialMediaConnect.ComposeShare('smc-compose-share', {$settings});",
-            View::POS_END
-        );
-    }
-
-    /**
      * Returns the live metadata for an entry
      *
      * @param Entry $entry
@@ -307,7 +235,7 @@ class ShareService extends Component
      *
      * @return Query
      */
-    private function getShareBaseQuery(): Query
+    public function getShareBaseQuery(): Query
     {
         return (new Query())
             ->from(Record\Share::tableName())
