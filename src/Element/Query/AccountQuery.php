@@ -173,7 +173,6 @@ class AccountQuery extends ElementQuery
             'social_media_connect_accounts.identifier',
             'social_media_connect_accounts.name',
             'social_media_connect_accounts.handle',
-            'social_media_connect_accounts.photoId',
             'social_media_connect_accounts.lastRefreshedAt',
             'social_media_connect_accounts.settings',
         ]);

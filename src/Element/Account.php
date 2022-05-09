@@ -10,7 +10,6 @@ namespace Gewerk\SocialMediaConnect\Element;
 use Craft;
 use craft\base\Element;
 use craft\elements\actions as Actions;
-use craft\elements\Asset;
 use craft\elements\db\ElementQueryInterface;
 use craft\elements\User;
 use craft\helpers\Cp;
@@ -55,11 +54,6 @@ class Account extends Element
     public $handle;
 
     /**
-     * @var int|null ID of account picture
-     */
-    public $photoId;
-
-    /**
      * @var DateTime|null Last time the account details were refreshed
      */
     public $lastRefreshedAt = null;
@@ -78,11 +72,6 @@ class Account extends Element
      * @var Token
      */
     private $_token;
-
-    /**
-     * @var Asset
-     */
-    private $_photo;
 
     /**
      * @inheritdoc
@@ -150,7 +139,6 @@ class Account extends Element
     {
         $names = parent::extraFields();
         $names[] = 'provider';
-        $names[] = 'photo';
         $names[] = 'connector';
 
         return $names;
@@ -207,14 +195,6 @@ class Account extends Element
     /**
      * @inheritdoc
      */
-    public function getHasRoundedThumb(): bool
-    {
-        return false;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getIsDeletable(): bool
     {
         return true;
@@ -247,49 +227,6 @@ class Account extends Element
     {
         $this->_connector = $connector;
         $this->connectorId = $connector->id ?? null;
-    }
-
-    /**
-     * Returns the account photo.
-     *
-     * @return Asset|null
-     */
-    public function getPhoto()
-    {
-        if ($this->_photo === null) {
-            if (!$this->photoId) {
-                return null;
-            }
-
-            $this->_photo = Craft::$app->getAssets()->getAssetById($this->photoId) ?? false;
-        }
-
-        return $this->_photo ?: null;
-    }
-
-    /**
-     * Sets the account photo.
-     *
-     * @param Asset|null $photo
-     */
-    public function setPhoto(Asset $photo = null)
-    {
-        $this->_photo = $photo;
-        $this->photoId = $photo->id ?? null;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getThumbUrl(int $size)
-    {
-        $photo = $this->getPhoto();
-
-        if ($photo) {
-            return Craft::$app->getAssets()->getThumbUrl($photo, $size, $size, false);
-        }
-
-        return Craft::$app->getAssetManager()->getPublishedUrl('@app/web/assets/cp/dist', true, 'images/user.svg');
     }
 
     /**

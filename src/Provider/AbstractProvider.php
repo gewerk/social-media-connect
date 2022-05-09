@@ -104,12 +104,4 @@ abstract class AbstractProvider extends SavableComponent implements ProviderInte
     {
         return new AccountCollection([]);
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function displayAccountName(Account $account): string
-    {
-        return "@{$account->handle}";
-    }
 }

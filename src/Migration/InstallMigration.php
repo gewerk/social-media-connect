@@ -64,7 +64,6 @@ class InstallMigration extends Migration
             'id' => $this->primaryKey(),
             'tokenId' => $this->integer()->notNull(),
             'connectorId' => $this->integer(),
-            'photoId' => $this->integer(),
             'identifier' => $this->string(),
             'name' => $this->tinyText()->notNull(),
             'handle' => $this->tinyText()->notNull(),
@@ -100,15 +99,6 @@ class InstallMigration extends Migration
             Record\Account::tableName(),
             ['connectorId'],
             Table::USERS,
-            ['id'],
-            'SET NULL'
-        );
-
-        $this->addForeignKey(
-            null,
-            Record\Account::tableName(),
-            ['photoId'],
-            Table::ASSETS,
             ['id'],
             'SET NULL'
         );

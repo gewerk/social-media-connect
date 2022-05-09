@@ -16,7 +16,6 @@ use craft\db\ActiveRecord;
  * @property string $identifier Identifier
  * @property string $name Account name
  * @property string $handle Account handle
- * @property int|null $photoId Account photo ID
  * @property string $settings Settings
  * @property DateTime|null $lastRefreshedAt Last refreshed at
  * @property DateTime|null $dateUpdated Record updated on
