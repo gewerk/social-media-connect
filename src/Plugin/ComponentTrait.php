@@ -7,6 +7,7 @@
 
 namespace Gewerk\SocialMediaConnect\Plugin;
 
+use Gewerk\SocialMediaConnect\Service\PostsService;
 use Gewerk\SocialMediaConnect\Service\ShareService;
 use Gewerk\SocialMediaConnect\Service\ProvidersService;
 use Gewerk\SocialMediaConnect\Service\TokensService;
@@ -44,6 +45,16 @@ trait ComponentTrait
     }
 
     /**
+     * Returns the social media posts service
+     *
+     * @return PostsService
+     */
+    public function getPosts(): PostsService
+    {
+        return $this->get('posts');
+    }
+
+    /**
      * Registers all plugin components
      *
      * @return void
@@ -54,6 +65,7 @@ trait ComponentTrait
             'tokens' => TokensService::class,
             'providers' => ProvidersService::class,
             'share' => ShareService::class,
+            'posts' => PostsService::class,
         ]);
     }
 }

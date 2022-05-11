@@ -19,9 +19,9 @@ use Gewerk\SocialMediaConnect\Record;
  * Query for social media accounts
  *
  * @property string|string[]|ProviderInterface $provider
- * @method Account[]|array all($db = null)
- * @method Account|array|null one($db = null)
- * @method Account|array|null nth(int $n, Connection $db = null)
+ * @method Account[] all($db = null)
+ * @method Account|null one($db = null)
+ * @method Account|null nth(int $n, Connection $db = null)
  * @package Gewerk\SocialMediaConnect\Element\Query
  */
 class AccountQuery extends ElementQuery

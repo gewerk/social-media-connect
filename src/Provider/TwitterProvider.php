@@ -11,23 +11,29 @@ use Craft;
 use craft\helpers\Cp;
 use DateTime;
 use Gewerk\SocialMediaConnect\Collection\AccountCollection;
+use Gewerk\SocialMediaConnect\Collection\PostCollection;
 use Gewerk\SocialMediaConnect\Element\Account;
+use Gewerk\SocialMediaConnect\Element\Post;
 use Gewerk\SocialMediaConnect\Model\Token;
 use Gewerk\SocialMediaConnect\Plugin;
 use Gewerk\SocialMediaConnect\Provider\Capability\ComposingCapabilityInterface;
+use Gewerk\SocialMediaConnect\Provider\Capability\PullPostsCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\OAuth2\AbstractProvider;
+use Gewerk\SocialMediaConnect\Provider\PostPayload\TwitterPostPayload;
 use Gewerk\SocialMediaConnect\Provider\Share\AbstractShare;
 use Gewerk\SocialMediaConnect\Provider\Share\TwitterShare;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use League\OAuth2\Client\Provider\GenericProvider;
+use Twitter\Text\Autolink;
+use Twitter\Text\Extractor;
 
 /**
  * Twitter provider
  *
  * @package Gewerk\SocialMediaConnect\Provider
  */
-class TwitterProvider extends AbstractProvider implements ComposingCapabilityInterface
+class TwitterProvider extends AbstractProvider implements ComposingCapabilityInterface, PullPostsCapabilityInterface
 {
     const TWITTER_API_ENDPOINT = 'api.twitter.com';
     const TWITTER_API_VERSION = '2';
@@ -77,6 +83,14 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
     /**
      * @inheritdoc
      */
+    public static function getPostPayloadClass(): string
+    {
+        return TwitterPostPayload::class;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getScopes(): array
     {
         $scopes = ['offline.access', 'tweet.read', 'users.read'];
@@ -108,6 +122,14 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
     public function supportsComposing(Account $account): bool
     {
         return $this->enablePosting && in_array('tweet.write', $account->getToken()->scopes);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function supportsPulling(Account $account): bool
+    {
+        return true;
     }
 
     /**
@@ -214,6 +236,14 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
     /**
      * @inheritdoc
      */
+    public function getPostAttributeHtml(Post $post): string
+    {
+        return $post->getPayload()->text;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getIdentifier(Token $token): string
     {
         // Query current token user
@@ -277,6 +307,77 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
         Craft::$app->getElements()->saveElement($account);
 
         return new AccountCollection([$account]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPosts(Account $account, int $limit = 10): PostCollection
+    {
+        // Get timeline
+        $token = $account->getToken();
+        $response = $this->getGuzzleClient()->get("users/{$account->identifier}/tweets", [
+            'headers' => [
+                'Authorization' => "Bearer {$token->token}",
+            ],
+            'query' => [
+                'exclude' => 'replies,retweets',
+                'expansions' => 'attachments.media_keys',
+                'max_results' => $limit,
+                'media.fields' => 'alt_text,height,media_key,type,url,width',
+                'tweet.fields' => 'id,text,created_at,entities,attachments',
+            ],
+        ]);
+
+        // Get body from request
+        $body = json_decode((string) $response->getBody(), true);
+        $posts = new PostCollection();
+
+        // Process posts
+        foreach ($body['data'] as $tweet) {
+            // Find or create social media post
+            $post = Post::findOneOrCreate([
+                'account' => $account,
+                'identifier' => $tweet['id'],
+            ]);
+
+            // Set post date
+            $post->type = self::getPostPayloadClass();
+            $post->postedAt = DateTime::createFromFormat(DateTime::RFC3339_EXTENDED, $tweet['created_at']);
+            $post->url = sprintf('https://twitter.com/%s/status/%s', $account->handle, $tweet['id']);
+
+            /** @var TwitterPostPayload */
+            $payload = $post->getPayload();
+            $payload->type = 'text';
+            $payload->text = $this->autolinkTweet($tweet['text'], $tweet['entities'] ?? []);
+
+            // Save post
+            if (Craft::$app->getElements()->saveElement($post)) {
+                $posts->add($post);
+            }
+        }
+
+        return $posts;
+    }
+
+    /**
+     * Autolinks all entities in a tweet
+     *
+     * @param string $tweet
+     * @param array $entities
+     * @return string
+     */
+    private function autolinkTweet(string $tweet, array $entities): string
+    {
+        // Merge all entity types in one list
+        $entities = call_user_func_array('array_merge', $entities);
+        $entities = array_map(fn ($entity) => array_merge($entity, [
+            'indices' => [$entity['start'], $entity['end']],
+        ]), $entities);
+        $entities = Extractor::create()->removeOverlappingEntities($entities);
+
+        // Apply entities to tweet
+        return (new Autolink())->autoLinkEntities($tweet, $entities);
     }
 
     /**

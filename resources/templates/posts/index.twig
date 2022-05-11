@@ -1,4 +1,7 @@
 {% extends '_layouts/elementindex' %}
 
+{% do view.registerAssetBundle('Gewerk\\SocialMediaConnect\\AssetBundle\\SharedCssAssetBundle') %}
+
 {% set title = 'Social Media Posts' | t('social-media-connect') %}
 {% set elementType = 'Gewerk\\SocialMediaConnect\\Element\\Post' %}
+{% set selectedSubnavItem = 'posts' %}

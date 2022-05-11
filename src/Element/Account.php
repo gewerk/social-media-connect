@@ -14,14 +14,15 @@ use craft\elements\db\ElementQueryInterface;
 use craft\elements\User;
 use craft\helpers\Cp;
 use craft\helpers\Db;
-use craft\helpers\Html;
 use craft\helpers\Json;
 use craft\helpers\StringHelper;
 use Exception;
 use Gewerk\SocialMediaConnect\Element\Query\AccountQuery;
+use Gewerk\SocialMediaConnect\Helper\ElementIndexHelper;
 use Gewerk\SocialMediaConnect\Model\Token;
 use Gewerk\SocialMediaConnect\Plugin;
 use Gewerk\SocialMediaConnect\Provider\Capability\ComposingCapabilityInterface;
+use Gewerk\SocialMediaConnect\Provider\Capability\PullPostsCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\ProviderInterface;
 use Gewerk\SocialMediaConnect\Record\Account as AccountRecord;
 use yii\base\InvalidConfigException;
@@ -193,6 +194,18 @@ class Account extends Element
     }
 
     /**
+     * Returns if this account can be used to pull posts
+     *
+     * @return bool
+     */
+    public function getSupportsPulling(): bool
+    {
+        $provider = $this->getProvider();
+
+        return $provider instanceof PullPostsCapabilityInterface && $provider->supportsPulling($this);
+    }
+
+    /**
      * @inheritdoc
      */
     public function getIsDeletable(): bool
@@ -324,14 +337,8 @@ class Account extends Element
         switch ($attribute) {
             case 'provider':
                 $provider = $this->getProvider();
-                $providersService = Plugin::$plugin->getProviders();
 
-                return '<div class="smc-provider-label">' .
-                    '<span class="smc-provider-label__icon" aria-hidden="true">' .
-                    $providersService->getProviderIconSvg($provider) .
-                    '</span><span class="smc-provider-label__label">' .
-                    Html::encode($provider->getName()) .
-                    '</span></div>';
+                return ElementIndexHelper::provider($provider);
 
             case 'name':
                 return html_entity_decode($this->name);

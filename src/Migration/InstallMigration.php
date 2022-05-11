@@ -148,6 +148,37 @@ class InstallMigration extends Migration
             ['id'],
             'CASCADE'
         );
+
+        $this->createTable(Record\Post::tableName(), [
+            'id' => $this->primaryKey(),
+            'accountId' => $this->integer()->notNull(),
+            'identifier' => $this->string()->notNull(),
+            'postedAt' => $this->dateTime()->notNull(),
+            'type' => $this->string()->notNull(),
+            'payload' => $this->json(),
+            'url' => $this->tinyText(),
+            'dateCreated' => $this->dateTime()->notNull(),
+            'dateUpdated' => $this->dateTime()->notNull(),
+            'uid' => $this->uid(),
+        ]);
+
+        $this->addForeignKey(
+            null,
+            Record\Post::tableName(),
+            ['id'],
+            Table::ELEMENTS,
+            ['id'],
+            'CASCADE'
+        );
+
+        $this->addForeignKey(
+            null,
+            Record\Post::tableName(),
+            ['accountId'],
+            Record\Account::tableName(),
+            ['id'],
+            'CASCADE'
+        );
     }
 
     /**
@@ -155,6 +186,7 @@ class InstallMigration extends Migration
      */
     public function safeDown()
     {
+        $this->dropTableIfExists(Record\Post::tableName());
         $this->dropTableIfExists(Record\Share::tableName());
         $this->dropTableIfExists(Record\Account::tableName());
         $this->dropTableIfExists(Record\Token::tableName());
