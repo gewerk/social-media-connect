@@ -16,22 +16,28 @@
   <div id="social-media-connect-providers"></div>
 {% endblock %}
 
+{% do view.registerTranslations('social-media-connect', [
+  'Enabled',
+  'Disabled',
+  'No providers exist yet.',
+]) %}
+
 {% js %}
   new Craft.VueAdminTable({
     columns: [
       { name: '__slot:title', title: Craft.t('app', 'Name') },
-      { name: 'type', title: Craft.t('app', 'Type'), callback: function(value) {
+      { name: 'type', title: Craft.t('social-media-connect', 'Type'), callback: function(value) {
         if (value.isMissing) {
           return '<span class="error">' + value.label + '</span>';
         }
 
         return value.label;
       } },
-      { name: 'enabled', title: Craft.t('formie', 'Enabled'), callback: function(value) {
+      { name: 'enabled', title: Craft.t('social-media-connect', 'Enabled'), callback: function(value) {
         if (value) {
-          return '<span class="status on"></span>' + Craft.t('formie', 'Enabled');
+          return '<span class="status on"></span>' + Craft.t('social-media-connect', 'Enabled');
         } else {
-          return '<span class="status"></span>' + Craft.t('formie', 'Disabled');
+          return '<span class="status"></span>' + Craft.t('social-media-connect', 'Disabled');
         }
       } },
     ],

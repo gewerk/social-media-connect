@@ -305,8 +305,8 @@ class Account extends Element
     protected static function defineTableAttributes(): array
     {
         $attributes = [
-            'handle' => ['label' => Craft::t('social-media-connect', 'Handle')],
-            'name' => ['label' => Craft::t('social-media-connect', 'Name')],
+            'handle' => ['label' => Craft::t('app', 'Handle')],
+            'name' => ['label' => Craft::t('app', 'Name')],
             'provider' => ['label' => Craft::t('social-media-connect', 'Provider')],
             'connector' => ['label' => Craft::t('social-media-connect', 'Connected by')],
         ];
@@ -356,8 +356,8 @@ class Account extends Element
     protected static function defineSortOptions(): array
     {
         return [
-            'handle' => Craft::t('social-media-connect', 'Handle'),
-            'name' => Craft::t('social-media-connect', 'Name'),
+            'handle' => Craft::t('app', 'Handle'),
+            'name' => Craft::t('app', 'Name'),
         ];
     }
 
@@ -379,7 +379,7 @@ class Account extends Element
 
         $actions[] = $elementsService->createAction([
             'type' => Actions\Edit::class,
-            'label' => Craft::t('app', 'Edit entry'),
+            'label' => Craft::t('social-media-connect', 'Edit account'),
         ]);
 
         $actions[] = [

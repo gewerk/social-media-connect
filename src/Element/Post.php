@@ -244,7 +244,7 @@ class Post extends Element
             'account' => ['label' => Craft::t('social-media-connect', 'Account')],
             'provider' => ['label' => Craft::t('social-media-connect', 'Provider')],
             'postedAt' => ['label' => Craft::t('social-media-connect', 'Posted At')],
-            'uri' => ['label' => Craft::t('social-media-connect', 'URL')],
+            'uri' => ['label' => Craft::t('social-media-connect', 'Link')],
         ];
 
         return $attributes;
@@ -326,13 +326,6 @@ class Post extends Element
     protected static function defineActions(string $source = null): array
     {
         $actions = [];
-        $elementsService = Craft::$app->getElements();
-
-        $actions[] = $elementsService->createAction([
-            'type' => Actions\Edit::class,
-            'label' => Craft::t('app', 'Edit entry'),
-        ]);
-
         $actions[] = [
             'type' => Actions\Delete::class,
         ];

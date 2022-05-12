@@ -22,7 +22,7 @@
   },
   not isNew ? {
     destructive: true,
-    label: 'Delete provider' | t('formie'),
+    label: 'Delete provider' | t('social-media-connect'),
     action: 'social-media-connect/providers/delete',
     redirect: 'settings/plugins/social-media-connect/providers' | hash,
     confirm: 'Are you sure you want to delete this provider?' | t('social-media-connect'),
@@ -52,8 +52,7 @@
     }) }}
 
     {{ forms.textField({
-      label: 'Handle' | t('social-media-connect'),
-      instructions: 'How you’ll refer to this provider in the templates.' | t('social-media-connect'),
+      label: 'Handle' | t('app'),
       id: 'handle',
       name: 'handle',
       class: 'code',
