@@ -10,7 +10,7 @@ namespace Gewerk\SocialMediaConnect\Controller;
 use Craft;
 use craft\elements\Entry;
 use craft\web\Controller;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
@@ -40,7 +40,7 @@ class EntryShareCounterController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $shares = Plugin::$plugin->getShare()->getSharesByEntry($entry);
+        $shares = SocialMediaConnect::$plugin->getShare()->getSharesByEntry($entry);
 
         return $this->asJson([
             'shares' => Craft::$app->getView()->renderTemplate(
@@ -72,7 +72,7 @@ class EntryShareCounterController extends Controller
         }
 
         return $this->asJson([
-            'count' => Plugin::$plugin->getShare()->getCountOfSharesByEntry($entry),
+            'count' => SocialMediaConnect::$plugin->getShare()->getCountOfSharesByEntry($entry),
         ]);
     }
 
@@ -85,7 +85,7 @@ class EntryShareCounterController extends Controller
     {
         $this->requirePostRequest();
 
-        $shareService = Plugin::$plugin->getShare();
+        $shareService = SocialMediaConnect::$plugin->getShare();
         $share = $shareService->getShareById(
             (int) $this->request->getRequiredBodyParam('shareId')
         );

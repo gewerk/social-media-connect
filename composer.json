@@ -61,7 +61,7 @@
     "handle": "social-media-connect",
     "documentationUrl": "https://gewerk.dev/plugins/social-media-connect",
     "changelogUrl": "https://raw.githubusercontent.com/gewerk/social-media-connect/main/CHANGELOG.md",
-    "class": "Gewerk\\SocialMediaConnect\\Plugin"
+    "class": "Gewerk\\SocialMediaConnect\\SocialMediaConnect"
   },
   "scripts": {
     "install-codestandards": [

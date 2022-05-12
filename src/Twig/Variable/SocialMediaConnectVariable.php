@@ -9,13 +9,13 @@ namespace Gewerk\SocialMediaConnect\Twig\Variable;
 
 use craft\base\Component;
 use craft\elements\Entry;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 
 class SocialMediaConnectVariable extends Component
 {
-    public function getPlugin(): Plugin
+    public function getPlugin(): SocialMediaConnect
     {
-        return Plugin::$plugin;
+        return SocialMediaConnect::$plugin;
     }
 
     public function getSharesByEntry(Entry $entry): array

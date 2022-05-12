@@ -18,7 +18,7 @@ use craft\web\View;
 use Gewerk\SocialMediaConnect\AssetBundle\ComposeShareAssetBundle;
 use Gewerk\SocialMediaConnect\AssetBundle\EntryShareCounterAssetBundle;
 use Gewerk\SocialMediaConnect\Job\PublishShare;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Record;
 
 /**
@@ -85,7 +85,7 @@ class EntryHooks
         );
 
         // Get counter
-        $count = Plugin::$plugin->getShare()->getCountOfSharesByEntry($entry);
+        $count = SocialMediaConnect::$plugin->getShare()->getCountOfSharesByEntry($entry);
 
         // Render template
         return $view->renderTemplate('social-media-connect/entry-share-counter/hook.twig', [
@@ -109,7 +109,7 @@ class EntryHooks
         }
 
         // Check for any unpublished shares
-        $shareService = Plugin::$plugin->getShare();
+        $shareService = SocialMediaConnect::$plugin->getShare();
         $unpublishedShares = $shareService->getShareBaseQuery()
             ->addSelect([
                 '[[social_media_connect_accounts.name]] AS accountName'

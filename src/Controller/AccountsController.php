@@ -12,7 +12,7 @@ use craft\helpers\Db;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use Gewerk\SocialMediaConnect\Exception\CallbackException;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Record\Token as TokenRecord;
 use yii\db\Exception;
 use yii\web\NotFoundHttpException;
@@ -29,7 +29,7 @@ class AccountsController extends Controller
     public function actionConnect(string $provider): Response
     {
         // Get provider
-        $provider = Plugin::$plugin->getProviders()->getProviderByHandle($provider);
+        $provider = SocialMediaConnect::$plugin->getProviders()->getProviderByHandle($provider);
         Craft::$app->getSession()->set('provider', $provider->getHandle());
 
         if (!$provider) {
@@ -53,7 +53,7 @@ class AccountsController extends Controller
     {
         // Get provider
         $providerHandle = Craft::$app->getSession()->get('provider');
-        $provider = Plugin::$plugin->getProviders()->getProviderByHandle($providerHandle);
+        $provider = SocialMediaConnect::$plugin->getProviders()->getProviderByHandle($providerHandle);
 
         if (!$provider) {
             throw new NotFoundHttpException();

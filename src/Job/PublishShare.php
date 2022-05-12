@@ -9,7 +9,7 @@ namespace Gewerk\SocialMediaConnect\Job;
 
 use Craft;
 use craft\queue\BaseJob as Job;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Provider\Capability\ComposingCapabilityInterface;
 
 /**
@@ -45,7 +45,7 @@ class PublishShare extends Job
     public function execute($queue)
     {
         // Get share
-        $share = Plugin::$plugin->getShare()->getShareById($this->shareId);
+        $share = SocialMediaConnect::$plugin->getShare()->getShareById($this->shareId);
         if (!$share || $share->success !== null) {
             return null;
         }
@@ -53,7 +53,7 @@ class PublishShare extends Job
         /** @var ComposingCapabilityInterface */
         $provider = $share->getAccount()->getProvider();
         $share = $provider->publishShare($share);
-        Plugin::$plugin->getShare()->saveShare($share, false);
+        SocialMediaConnect::$plugin->getShare()->saveShare($share, false);
 
         // Set progress
         $this->setProgress($queue, 1);

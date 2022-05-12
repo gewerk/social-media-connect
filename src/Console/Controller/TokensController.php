@@ -11,7 +11,7 @@ use craft\console\Controller;
 use craft\helpers\Console;
 use DateTime;
 use Gewerk\SocialMediaConnect\Exception\MissingCapabilityException;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Throwable;
 use yii\console\ExitCode;
 
@@ -30,7 +30,7 @@ class TokensController extends Controller
     public function actionRefresh(): int
     {
         // Get all used tokens
-        $tokensService = Plugin::$plugin->getTokens();
+        $tokensService = SocialMediaConnect::$plugin->getTokens();
         $tokens = $tokensService->getUsedTokens();
 
         // Process all tokens

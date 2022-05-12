@@ -11,7 +11,7 @@ use Craft;
 use craft\helpers\Json;
 use craft\web\Controller;
 use craft\web\Response;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Provider\MissingProvider;
 use Gewerk\SocialMediaConnect\Provider\ProviderInterface;
 use yii\web\BadRequestHttpException;
@@ -31,9 +31,9 @@ class ProvidersController extends Controller
      */
     public function actionIndex(): Response
     {
-        $plugin = Plugin::$plugin;
+        $plugin = SocialMediaConnect::$plugin;
 
-        $providersService = Plugin::$plugin->getProviders();
+        $providersService = SocialMediaConnect::$plugin->getProviders();
         $providers = $providersService->getAllProviders();
 
         return $this->renderTemplate('social-media-connect/settings/providers', [
@@ -51,7 +51,7 @@ class ProvidersController extends Controller
      */
     public function actionEdit(int $providerId = null, ProviderInterface $provider = null): Response
     {
-        $providers = Plugin::$plugin->getProviders();
+        $providers = SocialMediaConnect::$plugin->getProviders();
         $providerTypes = $providers->getAllProviderTypes();
 
         $isNew = true;
@@ -87,7 +87,7 @@ class ProvidersController extends Controller
         }
 
         return $this->renderTemplate('social-media-connect/settings/providers/edit', [
-            'plugin' => Plugin::$plugin,
+            'plugin' => SocialMediaConnect::$plugin,
             'provider' => $provider,
             'isNew' => $isNew,
             'missingPlaceholder' => $provider instanceof MissingProvider ? $provider->getPlaceholderHtml() : null,
@@ -107,7 +107,7 @@ class ProvidersController extends Controller
     {
         $this->requirePostRequest();
 
-        $providersService = Plugin::$plugin->getProviders();
+        $providersService = SocialMediaConnect::$plugin->getProviders();
         $providerId = $this->request->getParam('id') ?: null;
         $type = $this->request->getParam('type');
         $settings = $this->request->getParam('types.' . $type, []);
@@ -160,7 +160,7 @@ class ProvidersController extends Controller
         $request = Craft::$app->getRequest();
         $providerId = $request->getRequiredParam('id');
 
-        $providersService = Plugin::$plugin->getProviders();
+        $providersService = SocialMediaConnect::$plugin->getProviders();
         $provider = $providersService->getProviderById($providerId);
 
         if (!$provider) {
@@ -197,7 +197,7 @@ class ProvidersController extends Controller
         $this->requireAcceptsJson();
 
         $providerIds = Json::decode($this->request->getRequiredParam('ids'));
-        $providersService = Plugin::$plugin->getProviders();
+        $providersService = SocialMediaConnect::$plugin->getProviders();
         $providersService->reorderProviders($providerIds);
 
         return $this->asJson(['success' => true]);

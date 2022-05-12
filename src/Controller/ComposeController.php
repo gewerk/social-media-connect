@@ -11,7 +11,7 @@ use Craft;
 use craft\elements\Entry;
 use craft\web\Controller;
 use Gewerk\SocialMediaConnect\Element\Account;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Provider\Capability\ComposingCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\Share\AbstractShare;
 use yii\web\NotFoundHttpException;
@@ -54,7 +54,7 @@ class ComposeController extends Controller
             }
 
             if ($success) {
-                Plugin::$plugin->getShare()->saveShare($share, false);
+                SocialMediaConnect::$plugin->getShare()->saveShare($share, false);
 
                 return $this->asJson([
                     'success' => true,
@@ -115,7 +115,7 @@ class ComposeController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $share = Plugin::$plugin->getShare()->createShare($entry, $account);
+        $share = SocialMediaConnect::$plugin->getShare()->createShare($entry, $account);
 
         if (!$share) {
             throw new NotFoundHttpException();

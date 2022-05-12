@@ -8,14 +8,14 @@
 namespace Gewerk\SocialMediaConnect\Helper;
 
 use craft\helpers\Html;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Provider\ProviderInterface;
 
 class ElementIndexHelper
 {
     public static function provider(ProviderInterface $provider): string
     {
-        $providersService = Plugin::$plugin->getProviders();
+        $providersService = SocialMediaConnect::$plugin->getProviders();
 
         return '<div class="smc-provider-label">' .
             '<span class="smc-provider-label__icon" aria-hidden="true">' .

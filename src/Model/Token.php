@@ -9,7 +9,7 @@ namespace Gewerk\SocialMediaConnect\Model;
 
 use craft\base\Model;
 use DateTime;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Provider\ProviderInterface;
 use yii\behaviors\AttributeTypecastBehavior;
 
@@ -118,7 +118,7 @@ class Token extends Model
     public function getProvider(): ProviderInterface
     {
         if ($this->_provider === null) {
-            $this->_provider = Plugin::$plugin->getProviders()->getProviderById($this->providerId);
+            $this->_provider = SocialMediaConnect::$plugin->getProviders()->getProviderById($this->providerId);
         }
 
         return $this->_provider;

@@ -17,7 +17,7 @@ use Gewerk\SocialMediaConnect\Collection\PostCollection;
 use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Element\Post;
 use Gewerk\SocialMediaConnect\Model\Token;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Provider\Capability\ComposingCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\Capability\PullPostsCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\OAuth2\AbstractProvider;
@@ -136,7 +136,7 @@ class FacebookPagesProvider extends AbstractProvider implements ComposingCapabil
 
         // Render an open graph preview
         $view = Craft::$app->getView();
-        $metadata = Plugin::$plugin->getShare()->getMetadataFromEntryPreview($share->getEntry());
+        $metadata = SocialMediaConnect::$plugin->getShare()->getMetadataFromEntryPreview($share->getEntry());
         $fields[] = $view->renderTemplate(
             'social-media-connect/link-preview/facebook',
             [

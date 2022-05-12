@@ -20,7 +20,7 @@ use Exception;
 use Gewerk\SocialMediaConnect\Element\Query\AccountQuery;
 use Gewerk\SocialMediaConnect\Helper\ElementIndexHelper;
 use Gewerk\SocialMediaConnect\Model\Token;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Provider\Capability\ComposingCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\Capability\PullPostsCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\ProviderInterface;
@@ -143,7 +143,7 @@ class Account extends Element
     public function getToken(): Token
     {
         if ($this->_token === null) {
-            $this->_token = Plugin::$plugin->getTokens()->getTokenByAccount($this);
+            $this->_token = SocialMediaConnect::$plugin->getTokens()->getTokenByAccount($this);
         }
 
         return $this->_token;
@@ -278,7 +278,7 @@ class Account extends Element
         ];
 
         // Add sources for all providers
-        foreach (Plugin::$plugin->getProviders()->getAllProviders() as $provider) {
+        foreach (SocialMediaConnect::$plugin->getProviders()->getAllProviders() as $provider) {
             $sources[] = [
                 'key' => $provider->getHandle(),
                 'label' => $provider->getName(),

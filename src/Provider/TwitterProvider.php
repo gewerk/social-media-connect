@@ -16,7 +16,7 @@ use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Element\Post;
 use Gewerk\SocialMediaConnect\Exception\TokenRefreshException;
 use Gewerk\SocialMediaConnect\Model\Token;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Provider\Capability\ComposingCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\Capability\PullPostsCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\OAuth2\AbstractProvider;
@@ -175,7 +175,7 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
 
         // Render an open graph preview
         $view = Craft::$app->getView();
-        $metadata = Plugin::$plugin->getShare()->getMetadataFromEntryPreview($share->getEntry());
+        $metadata = SocialMediaConnect::$plugin->getShare()->getMetadataFromEntryPreview($share->getEntry());
         $fields[] = $view->renderTemplate(
             'social-media-connect/link-preview/twitter',
             [
@@ -198,7 +198,7 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
         // Refresh access token if it expired
         if ($token->isExpired()) {
             try {
-                Plugin::$plugin->getTokens()->refreshToken($token);
+                SocialMediaConnect::$plugin->getTokens()->refreshToken($token);
             } catch (Throwable $e) {
                 Craft::warning($e->getTraceAsString());
             }
@@ -320,7 +320,7 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
         // Refresh access token if it expired
         if ($token->isExpired()) {
             try {
-                Plugin::$plugin->getTokens()->refreshToken($token);
+                SocialMediaConnect::$plugin->getTokens()->refreshToken($token);
             } catch (Throwable $e) {
                 Craft::warning($e->getTraceAsString());
             }
@@ -368,7 +368,7 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
         $token = $account->getToken();
         if ($token->isExpired()) {
             try {
-                Plugin::$plugin->getTokens()->refreshToken($token);
+                SocialMediaConnect::$plugin->getTokens()->refreshToken($token);
             } catch (Throwable $e) {
                 Craft::warning($e->getTraceAsString());
             }

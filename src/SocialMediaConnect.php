@@ -8,7 +8,7 @@
 namespace Gewerk\SocialMediaConnect;
 
 use Craft;
-use craft\base\Plugin as BasePlugin;
+use craft\base\Plugin;
 use craft\db\MigrationManager;
 use craft\elements\Entry;
 use craft\events\RebuildConfigEvent;
@@ -24,6 +24,7 @@ use craft\web\UrlManager;
 use craft\web\View;
 use Gewerk\SocialMediaConnect\Hooks\EntryHooks;
 use Gewerk\SocialMediaConnect\Model\Settings;
+use Gewerk\SocialMediaConnect\Plugin\ComponentTrait;
 use Gewerk\SocialMediaConnect\Service\ProvidersService;
 use Gewerk\SocialMediaConnect\Twig\Variable\SocialMediaConnectVariable;
 use yii\base\Event;
@@ -33,9 +34,9 @@ use yii\base\Event;
  *
  * @package Gewerk\SocialMediaConnect
  */
-class Plugin extends BasePlugin
+class SocialMediaConnect extends Plugin
 {
-    use Plugin\ComponentTrait;
+    use ComponentTrait;
 
     /**
      * Current plugin instance

@@ -12,7 +12,7 @@ use craft\elements\db\ElementQuery;
 use craft\helpers\Db;
 use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Element\Post;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Provider\ProviderInterface;
 use Gewerk\SocialMediaConnect\Record;
 
@@ -106,7 +106,7 @@ class PostQuery extends ElementQuery
     {
         // Swap handle to string to an object
         if (is_string($value)) {
-            $value = Plugin::$plugin->getProviders()->getProviderByHandle($value);
+            $value = SocialMediaConnect::$plugin->getProviders()->getProviderByHandle($value);
         }
 
         if ($value instanceof ProviderInterface) {

@@ -13,7 +13,7 @@ use craft\web\assets\cp\CpAsset;
 use craft\web\assets\vue\VueAsset;
 use craft\web\View;
 use Gewerk\SocialMediaConnect\Element\Account;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 
 /**
  * Asset bundle for loading the Vue component with style for the posting
@@ -62,7 +62,7 @@ class ComposeShareAssetBundle extends AssetBundle
             'id' => $account->id,
             'name' => $account->name,
             'provider' => $account->getProvider()->getName(),
-            'icon' => Plugin::$plugin->getProviders()->getProviderIconSvg($account->getProvider()),
+            'icon' => SocialMediaConnect::$plugin->getProviders()->getProviderIconSvg($account->getProvider()),
         ], $accounts));
 
         // Plugin translations

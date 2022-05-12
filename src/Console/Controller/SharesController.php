@@ -8,7 +8,7 @@
 namespace Gewerk\SocialMediaConnect\Console\Controller;
 
 use craft\console\Controller;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use yii\console\ExitCode;
 
 /**
@@ -25,7 +25,7 @@ class SharesController extends Controller
      */
     public function actionPublish()
     {
-        Plugin::$plugin->getShare()->publishSharesFromPendingEntries();
+        SocialMediaConnect::$plugin->getShare()->publishSharesFromPendingEntries();
 
         return ExitCode::OK;
     }

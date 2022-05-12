@@ -11,7 +11,7 @@ use craft\console\Controller;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Console;
 use Gewerk\SocialMediaConnect\Element\Account;
-use Gewerk\SocialMediaConnect\Plugin;
+use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Throwable;
 use yii\console\ExitCode;
 
@@ -44,7 +44,7 @@ class PostsController extends Controller
 
         foreach ($accounts as $index => $account) {
             try {
-                Plugin::$plugin->getPosts()->pullPostsForAccount($account, $limit);
+                SocialMediaConnect::$plugin->getPosts()->pullPostsForAccount($account, $limit);
             } catch (Throwable $e) {
                 // Errors happen
                 $errors[] = [
