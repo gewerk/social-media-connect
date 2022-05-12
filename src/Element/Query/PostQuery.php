@@ -168,6 +168,19 @@ class PostQuery extends ElementQuery
     }
 
     /**
+     * Query by identifier
+     *
+     * @param string|string[]|null $value
+     * @return static
+     */
+    public function identifier($value = null)
+    {
+        $this->identifier = $value;
+
+        return $this;
+    }
+
+    /**
      * @inheritdoc
      */
     protected function beforePrepare(): bool

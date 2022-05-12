@@ -286,10 +286,15 @@ class FacebookPagesProvider extends AbstractProvider implements ComposingCapabil
         $body = json_decode((string) $response->getBody(), true);
         foreach ($body['data'] as $pageToken) {
             // Find or create account
-            $account = Account::findOneOrCreate([
-                'tokenId' => $token->id,
-                'identifier' => $pageToken['id'],
-            ]);
+            $account = Account::find()
+                ->tokenId($token->id)
+                ->identifier($pageToken['id'])
+                ->trashed(null)
+                ->anyStatus()
+                ->one() ?? new Account([
+                    'tokenId' => $token->id,
+                    'identifier' => $pageToken['id'],
+                ]);
 
             // Get page details
             $appSecretProof = AppSecretProof::create($this->clientSecret, $pageToken['access_token']);
@@ -382,13 +387,18 @@ class FacebookPagesProvider extends AbstractProvider implements ComposingCapabil
             }
 
             // Find or create social media post
-            $post = Post::findOneOrCreate([
-                'account' => $account,
-                'identifier' => $feedPost['id'],
-            ]);
+            $post = Post::find()
+                ->account($account)
+                ->identifier($feedPost['id'])
+                ->trashed(null)
+                ->anyStatus()
+                ->one() ?? new Post([
+                    'account' => $account,
+                    'identifier' => $feedPost['id'],
+                    'type' => self::getPostPayloadClass(),
+                ]);
 
-            // Set post date
-            $post->type = self::getPostPayloadClass();
+            // Set post data
             $post->postedAt = DateTime::createFromFormat(DateTime::ISO8601, $feedPost['created_time']);
             $post->url = $feedPost['permalink_url'];
 

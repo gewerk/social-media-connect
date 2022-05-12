@@ -337,10 +337,15 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
         $userDetails = json_decode((string) $response->getBody(), true);
 
         // Find or create account
-        $account = Account::findOneOrCreate([
-            'tokenId' => $token->id,
-            'identifier' => $userDetails['data']['id'],
-        ]);
+        $account = Account::find()
+            ->tokenId($token->id)
+            ->identifier($userDetails['data']['id'])
+            ->trashed(null)
+            ->anyStatus()
+            ->one() ?? new Account([
+                'tokenId' => $token->id,
+                'identifier' => $userDetails['data']['id'],
+            ]);
 
         // Update account
         $account->name = $userDetails['data']['name'];
@@ -390,13 +395,18 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
         // Process posts
         foreach ($body['data'] as $tweet) {
             // Find or create social media post
-            $post = Post::findOneOrCreate([
-                'account' => $account,
-                'identifier' => $tweet['id'],
-            ]);
+            $post = Post::find()
+                ->account($account)
+                ->identifier($tweet['id'])
+                ->trashed(null)
+                ->anyStatus()
+                ->one() ?? new Post([
+                    'account' => $account,
+                    'identifier' => $tweet['id'],
+                    'type' => self::getPostPayloadClass(),
+                ]);
 
             // Set post date
-            $post->type = self::getPostPayloadClass();
             $post->postedAt = DateTime::createFromFormat(DateTime::RFC3339_EXTENDED, $tweet['created_at']);
             $post->url = sprintf('https://twitter.com/%s/status/%s', $account->handle, $tweet['id']);
 

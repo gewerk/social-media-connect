@@ -100,17 +100,6 @@ class Account extends Element
     }
 
     /**
-     * Finds one or create a new instance with provided criteria
-     *
-     * @param array $criteria
-     * @return self
-     */
-    public static function findOneOrCreate($criteria)
-    {
-        return static::findByCondition($criteria, true) ?? new static($criteria);
-    }
-
-    /**
      * @inheritdoc
      */
     public function init()

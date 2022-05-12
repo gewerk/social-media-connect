@@ -189,10 +189,15 @@ class InstagramProvider extends AbstractProvider implements SupportsTokenRefresh
         $userDetails = json_decode((string) $response->getBody(), true);
 
         // Find or create account
-        $account = Account::findOneOrCreate([
-            'tokenId' => $token->id,
-            'identifier' => $userDetails['id'],
-        ]);
+        $account = Account::find()
+            ->tokenId($token->id)
+            ->identifier($userDetails['id'])
+            ->trashed(null)
+            ->anyStatus()
+            ->one() ?? new Account([
+                'tokenId' => $token->id,
+                'identifier' => $userDetails['id'],
+            ]);
 
         // Update account
         $account->name = $userDetails['username'];
@@ -237,13 +242,18 @@ class InstagramProvider extends AbstractProvider implements SupportsTokenRefresh
         // Process posts
         foreach ($feed['data'] as $feedPost) {
             // Find or create social media post
-            $post = Post::findOneOrCreate([
-                'account' => $account,
-                'identifier' => $feedPost['id'],
-            ]);
+            $post = Post::find()
+                ->account($account)
+                ->identifier($feedPost['id'])
+                ->trashed(null)
+                ->anyStatus()
+                ->one() ?? new Post([
+                    'account' => $account,
+                    'identifier' => $feedPost['id'],
+                    'type' => self::getPostPayloadClass(),
+                ]);
 
             // Set post date
-            $post->type = self::getPostPayloadClass();
             $post->postedAt = DateTime::createFromFormat(DateTime::ISO8601, $feedPost['timestamp']);
             $post->url = $feedPost['permalink'];
 
