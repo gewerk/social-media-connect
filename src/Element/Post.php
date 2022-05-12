@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://gewerk.dev/plugins/social-media-connect
  * @copyright 2022 gewerk, Dennis Morhardt
@@ -57,12 +58,12 @@ class Post extends Element
     /**
      * @var Account|null
      */
-    private $_account = null;
+    private $account = null;
 
     /**
      * @var AbstractPostPayload|null
      */
-    private $_payload = null;
+    private $postPayload = null;
 
     /**
      * @inheritdoc
@@ -101,7 +102,7 @@ class Post extends Element
     public function setAccount(Account $account): void
     {
         $this->accountId = $account->id;
-        $this->_account = $account;
+        $this->account = $account;
     }
 
     /**
@@ -111,14 +112,14 @@ class Post extends Element
      */
     public function getAccount(): Account
     {
-        if ($this->_account === null) {
-            $this->_account = Craft::$app->getElements()->getElementById(
+        if ($this->account === null) {
+            $this->account = Craft::$app->getElements()->getElementById(
                 $this->accountId,
                 Account::class
             );
         }
 
-        return $this->_account;
+        return $this->account;
     }
 
     /**
@@ -129,7 +130,7 @@ class Post extends Element
      */
     public function setPayload(AbstractPostPayload $payload): void
     {
-        $this->_payload = $payload;
+        $this->postPayload = $payload;
     }
 
     /**
@@ -147,8 +148,8 @@ class Post extends Element
      */
     public function getPayload(): AbstractPostPayload
     {
-        if ($this->_payload === null) {
-            $this->_payload = ComponentHelper::createComponent(
+        if ($this->postPayload === null) {
+            $this->postPayload = ComponentHelper::createComponent(
                 [
                     'type' => $this->type,
                     'settings' => $this->payload,
@@ -157,7 +158,7 @@ class Post extends Element
             );
         }
 
-        return $this->_payload;
+        return $this->postPayload;
     }
 
     /**
@@ -182,7 +183,7 @@ class Post extends Element
         $record->identifier = $this->identifier;
         $record->url = $this->url;
         $record->type = $this->type;
-        $record->payload = Db::prepareValueForDb($this->_payload->getSettings());
+        $record->payload = Db::prepareValueForDb($this->postPayload->getSettings());
         $record->postedAt = Db::prepareDateForDb($this->postedAt);
 
         // Save record

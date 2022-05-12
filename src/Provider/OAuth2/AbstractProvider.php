@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://gewerk.dev/plugins/social-media-connect
  * @copyright 2022 gewerk, Dennis Morhardt
@@ -166,7 +167,8 @@ abstract class AbstractProvider extends BaseAbstractProvider implements Provider
 
         $token = new Token();
         $token->token = $accessToken->getToken();
-        $token->expiryDate = $accessToken->getExpires() ? DateTime::createFromFormat('U', $accessToken->getExpires()) : null;
+        $token->expiryDate = $accessToken->getExpires() ?
+            DateTime::createFromFormat('U', $accessToken->getExpires()) : null;
         $token->refreshToken = $accessToken->getRefreshToken();
         $token->scopes = $this->getScopes();
         $token->identifier = $this->getIdentifier($token);

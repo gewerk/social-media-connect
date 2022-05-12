@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://gewerk.dev/plugins/social-media-connect
  * @copyright 2022 gewerk, Dennis Morhardt
@@ -15,7 +16,7 @@ abstract class AbstractPostPayload extends SavableComponent
     /**
      * @var Post
      */
-    private $_post;
+    private $post;
 
     /**
      * Sets the post
@@ -25,7 +26,7 @@ abstract class AbstractPostPayload extends SavableComponent
      */
     public function setPost(Post $post): void
     {
-        $this->_post = $post;
+        $this->post = $post;
     }
 
     /**
@@ -35,6 +36,6 @@ abstract class AbstractPostPayload extends SavableComponent
      */
     public function getPost(): Post
     {
-        return $this->_post;
+        return $this->post;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://gewerk.dev/plugins/social-media-connect
  * @copyright 2022 gewerk, Dennis Morhardt
@@ -26,18 +27,18 @@ use Throwable;
 
 class ProvidersService extends Component
 {
-    const CONFIG_KEY = 'socialMediaConnect.providers';
-    const EVENT_REGISTER_PROVIDERS = 'registerProviders';
-    const EVENT_BEFORE_SAVE_PROVIDER = 'beforeSaveProvider';
-    const EVENT_AFTER_SAVE_PROVIDER = 'afterSaveProvider';
-    const EVENT_BEFORE_DELETE_PROVIDER = 'beforeDeleteProvider';
-    const EVENT_AFTER_DELETE_PROVIDER = 'afterDeleteProvider';
-    const EVENT_BEFORE_APPLY_PROVIDER_DELETE = 'beforeApplyProviderDelete';
+    public const CONFIG_KEY = 'socialMediaConnect.providers';
+    public const EVENT_REGISTER_PROVIDERS = 'registerProviders';
+    public const EVENT_BEFORE_SAVE_PROVIDER = 'beforeSaveProvider';
+    public const EVENT_AFTER_SAVE_PROVIDER = 'afterSaveProvider';
+    public const EVENT_BEFORE_DELETE_PROVIDER = 'beforeDeleteProvider';
+    public const EVENT_AFTER_DELETE_PROVIDER = 'afterDeleteProvider';
+    public const EVENT_BEFORE_APPLY_PROVIDER_DELETE = 'beforeApplyProviderDelete';
 
     /**
      * @var ProviderInterface[]
      */
-    private $_providers = null;
+    private $providers = null;
 
     /**
      * Returns all providers
@@ -46,23 +47,34 @@ class ProvidersService extends Component
      */
     public function getAllProviders(): array
     {
-        if ($this->_providers !== null) {
-            return $this->_providers;
+        if ($this->providers !== null) {
+            return $this->providers;
         }
 
-        $this->_providers = [];
+        $this->providers = [];
 
         $providerRecords = (new Query())
-            ->select(['id', 'name', 'handle', 'type', 'enabled', 'sortOrder', 'settings', 'dateCreated', 'dateUpdated', 'uid'])
+            ->select([
+                'id',
+                'name',
+                'handle',
+                'type',
+                'enabled',
+                'sortOrder',
+                'settings',
+                'dateCreated',
+                'dateUpdated',
+                'uid',
+            ])
             ->from(ProviderRecord::tableName())
             ->orderBy(['sortOrder' => SORT_ASC])
             ->all();
 
         foreach ($providerRecords as $providerRecord) {
-            $this->_providers[] = $this->createProvider($providerRecord);
+            $this->providers[] = $this->createProvider($providerRecord);
         }
 
-        return $this->_providers;
+        return $this->providers;
     }
 
     /**
@@ -317,7 +329,7 @@ class ProvidersService extends Component
             throw $e;
         }
 
-        $this->_providers = null;
+        $this->providers = null;
 
         $provider = $this->getProviderById($providerRecord->id);
         $provider->afterSave($isNew);
@@ -372,7 +384,7 @@ class ProvidersService extends Component
             throw $e;
         }
 
-        $this->_providers = null;
+        $this->providers = null;
 
         if ($this->hasEventHandlers(self::EVENT_AFTER_DELETE_PROVIDER)) {
             $this->trigger(self::EVENT_AFTER_DELETE_PROVIDER, new ProviderEvent([

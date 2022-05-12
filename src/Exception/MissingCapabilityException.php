@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://gewerk.dev/plugins/social-media-connect
  * @copyright 2022 gewerk, Dennis Morhardt
@@ -31,8 +32,12 @@ class MissingCapabilityException extends SocialMediaConnectException
      * @param Throwable|null $previous
      * @return void
      */
-    public function __construct(ProviderInterface $provider, string $capability, int $code = 0, ?Throwable $previous = null)
-    {
+    public function __construct(
+        ProviderInterface $provider,
+        string $capability,
+        int $code = 0,
+        ?Throwable $previous = null
+    ) {
         $this->provider = $provider;
         $this->capability = $capability;
 

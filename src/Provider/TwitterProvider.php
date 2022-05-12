@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://gewerk.dev/plugins/social-media-connect
  * @copyright 2022 gewerk, Dennis Morhardt
@@ -37,10 +38,13 @@ use Twitter\Text\Extractor;
  *
  * @package Gewerk\SocialMediaConnect\Provider
  */
-class TwitterProvider extends AbstractProvider implements ComposingCapabilityInterface, PullPostsCapabilityInterface, SupportsTokenRefreshingInterface
+class TwitterProvider extends AbstractProvider implements
+    ComposingCapabilityInterface,
+    PullPostsCapabilityInterface,
+    SupportsTokenRefreshingInterface
 {
-    const TWITTER_API_ENDPOINT = 'api.twitter.com';
-    const TWITTER_API_VERSION = '2';
+    protected const TWITTER_API_ENDPOINT = 'api.twitter.com';
+    protected const TWITTER_API_VERSION = '2';
 
     /**
      * @var bool Enable posting
@@ -50,7 +54,7 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
     /**
      * @var GuzzleClient|null
      */
-    private $_guzzle = null;
+    private $guzzle = null;
 
     /**
      * @inheritdoc
@@ -113,6 +117,7 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
     {
         $options = parent::getProviderOptions();
         $options['scopeSeparator'] = ' ';
+        // phpcs:ignore Generic.Files.LineLength.TooLong
         $options['urlAuthorize'] = 'https://twitter.com/i/oauth2/authorize?code_challenge=challenge&code_challenge_method=plain';
         $options['urlAccessToken'] = 'https://api.twitter.com/2/oauth2/token?code_verifier=challenge';
         $options['urlResourceOwnerDetails'] = '';
@@ -150,7 +155,8 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
             ]);
 
             $token->token = $refreshedAccessToken->getToken();
-            $token->expiryDate = $refreshedAccessToken->getExpires() ? DateTime::createFromFormat('U', $refreshedAccessToken->getExpires()) : null;
+            $token->expiryDate = $refreshedAccessToken->getExpires() ?
+                DateTime::createFromFormat('U', $refreshedAccessToken->getExpires()) : null;
             $token->refreshToken = $refreshedAccessToken->getRefreshToken();
 
             return $token;
@@ -452,8 +458,8 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
     private function getGuzzleClient(): GuzzleClient
     {
         // Create guzzle client for Twitter API
-        if ($this->_guzzle === null) {
-            $this->_guzzle = Craft::createGuzzleClient([
+        if ($this->guzzle === null) {
+            $this->guzzle = Craft::createGuzzleClient([
                 'base_uri' => sprintf('https://%s/%s/', self::TWITTER_API_ENDPOINT, self::TWITTER_API_VERSION),
                 'allow_redirects' => [
                     'track_redirects' => true,
@@ -461,6 +467,6 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
             ]);
         }
 
-        return $this->_guzzle;
+        return $this->guzzle;
     }
 }

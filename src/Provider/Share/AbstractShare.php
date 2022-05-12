@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://gewerk.dev/plugins/social-media-connect
  * @copyright 2022 gewerk, Dennis Morhardt
@@ -77,12 +78,12 @@ abstract class AbstractShare extends SavableComponent
     /**
      * @var Entry|null
      */
-    private $_entry = null;
+    private $entry = null;
 
     /**
      * @var Account|null
      */
-    private $_account = null;
+    private $account = null;
 
     /**
      * @inheritdoc
@@ -110,7 +111,7 @@ abstract class AbstractShare extends SavableComponent
     {
         $this->entryId = $entry->id;
         $this->siteId = $entry->siteId;
-        $this->_entry = $entry;
+        $this->entry = $entry;
     }
 
     /**
@@ -120,15 +121,15 @@ abstract class AbstractShare extends SavableComponent
      */
     public function getEntry(): Entry
     {
-        if ($this->_entry === null) {
-            $this->_entry = Craft::$app->getElements()->getElementById(
+        if ($this->entry === null) {
+            $this->entry = Craft::$app->getElements()->getElementById(
                 $this->entryId,
                 Entry::class,
                 $this->siteId
             );
         }
 
-        return $this->_entry;
+        return $this->entry;
     }
 
     /**
@@ -140,7 +141,7 @@ abstract class AbstractShare extends SavableComponent
     public function setAccount(Account $account): void
     {
         $this->accountId = $account->id;
-        $this->_account = $account;
+        $this->account = $account;
     }
 
     /**
@@ -150,13 +151,13 @@ abstract class AbstractShare extends SavableComponent
      */
     public function getAccount(): Account
     {
-        if ($this->_account === null) {
-            $this->_account = Account::findOne([
+        if ($this->account === null) {
+            $this->account = Account::findOne([
                 'id' => $this->accountId,
             ]);
         }
 
-        return $this->_account;
+        return $this->account;
     }
 
     /**

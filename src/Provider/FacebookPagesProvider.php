@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://gewerk.dev/plugins/social-media-connect
  * @copyright 2022 gewerk, Dennis Morhardt
@@ -30,10 +31,12 @@ use League\OAuth2\Client\Provider\AppSecretProof;
 use League\OAuth2\Client\Provider\Facebook;
 use VStelmakh\UrlHighlight\UrlHighlight;
 
-class FacebookPagesProvider extends AbstractProvider implements ComposingCapabilityInterface, PullPostsCapabilityInterface
+class FacebookPagesProvider extends AbstractProvider implements
+    ComposingCapabilityInterface,
+    PullPostsCapabilityInterface
 {
-    const FACEBOOK_API_VERSION = 'v13.0';
-    const FACEBOOK_API_ENDPOINT = 'graph.facebook.com';
+    protected const FACEBOOK_API_VERSION = 'v13.0';
+    protected const FACEBOOK_API_ENDPOINT = 'graph.facebook.com';
 
     /**
      * @var bool Enable posting
@@ -43,7 +46,7 @@ class FacebookPagesProvider extends AbstractProvider implements ComposingCapabil
     /**
      * @var GuzzleClient
      */
-    private $_guzzle;
+    private $guzzle;
 
     /**
      * @inheritdoc
@@ -406,7 +409,10 @@ class FacebookPagesProvider extends AbstractProvider implements ComposingCapabil
             $payload = $post->getPayload();
 
             // Message empty? Use story
-            $payload->text = $urlHighlight->highlightUrls($this->parseFacebookTextTags($feedPost['message'] ?? '', $feedPost['message_tags'] ?? []));
+            $payload->text = $urlHighlight->highlightUrls(
+                $this->parseFacebookTextTags($feedPost['message'] ?? '', $feedPost['message_tags'] ?? [])
+            );
+
             if (empty($post->text) && isset($feedPost['story'])) {
                 $payload->text = $this->parseFacebookTextTags($feedPost['story'], $feedPost['story_tags'] ?? []);
             }
@@ -471,8 +477,8 @@ class FacebookPagesProvider extends AbstractProvider implements ComposingCapabil
     private function getGuzzleClient(): GuzzleClient
     {
         // Create guzzle client for Facebook API
-        if ($this->_guzzle === null) {
-            $this->_guzzle = Craft::createGuzzleClient([
+        if ($this->guzzle === null) {
+            $this->guzzle = Craft::createGuzzleClient([
                 'base_uri' => sprintf('https://%s/%s/', self::FACEBOOK_API_ENDPOINT, self::FACEBOOK_API_VERSION),
                 'allow_redirects' => [
                     'track_redirects' => true,
@@ -480,7 +486,7 @@ class FacebookPagesProvider extends AbstractProvider implements ComposingCapabil
             ]);
         }
 
-        return $this->_guzzle;
+        return $this->guzzle;
     }
 
     /**

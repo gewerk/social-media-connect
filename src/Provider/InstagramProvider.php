@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://gewerk.dev/plugins/social-media-connect
  * @copyright 2022 gewerk, Dennis Morhardt
@@ -28,14 +29,16 @@ use League\OAuth2\Client\Provider\Instagram;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use VStelmakh\UrlHighlight\UrlHighlight;
 
-class InstagramProvider extends AbstractProvider implements SupportsTokenRefreshingInterface, PullPostsCapabilityInterface
+class InstagramProvider extends AbstractProvider implements
+    SupportsTokenRefreshingInterface,
+    PullPostsCapabilityInterface
 {
-    const INSTAGRAM_API_ENDPOINT = 'graph.instagram.com';
+    protected const INSTAGRAM_API_ENDPOINT = 'graph.instagram.com';
 
     /**
      * @var GuzzleClient|null
      */
-    private $_guzzle = null;
+    private $guzzle = null;
 
     /**
      * @inheritdoc
@@ -103,7 +106,8 @@ class InstagramProvider extends AbstractProvider implements SupportsTokenRefresh
             $refreshedAccessToken = $provider->getRefreshedAccessToken($token->token);
 
             $token->token = $refreshedAccessToken->getToken();
-            $token->expiryDate = $refreshedAccessToken->getExpires() ? DateTime::createFromFormat('U', $refreshedAccessToken->getExpires()) : null;
+            $token->expiryDate = $refreshedAccessToken->getExpires() ?
+                DateTime::createFromFormat('U', $refreshedAccessToken->getExpires()) : null;
             $token->refreshToken = $refreshedAccessToken->getRefreshToken();
 
             return $token;
@@ -142,7 +146,10 @@ class InstagramProvider extends AbstractProvider implements SupportsTokenRefresh
 
             $settings[] = Cp::textFieldHtml([
                 'label' => Craft::t('social-media-connect', 'Data Deletion Request URL'),
-                'instructions' => Craft::t('social-media-connect', 'Callback URL if an user requests deleting their data'),
+                'instructions' => Craft::t(
+                    'social-media-connect',
+                    'Callback URL if an user requests deleting their data'
+                ),
                 'readonly' => true,
                 'value' => UrlHelper::actionUrl('social-media-connect/accounts/data-deletion-request', [
                     'provider' => $this->handle,
@@ -259,7 +266,8 @@ class InstagramProvider extends AbstractProvider implements SupportsTokenRefresh
 
             /** @var InstagramPostPayload */
             $payload = $post->getPayload();
-            $payload->type = $feedPost['media_type'] === 'CAROUSEL_ALBUM' ? 'gallery' : strtolower($feedPost['media_type']);
+            $payload->type = $feedPost['media_type'] === 'CAROUSEL_ALBUM' ?
+                'gallery' : strtolower($feedPost['media_type']);
             $payload->text = $urlHighlight->highlightUrls($feedPost['caption'] ?? '');
             $payload->videoUrl = $feedPost['media_type'] === 'VIDEO' ? $feedPost['media_url'] : null;
             $payload->imageUrl = $feedPost['thumbnail_url'] ?? $feedPost['media_url'] ?? null;
@@ -287,12 +295,12 @@ class InstagramProvider extends AbstractProvider implements SupportsTokenRefresh
     private function getGuzzleClient(): GuzzleClient
     {
         // Create guzzle client for Facebook API
-        if ($this->_guzzle === null) {
-            $this->_guzzle = Craft::createGuzzleClient([
+        if ($this->guzzle === null) {
+            $this->guzzle = Craft::createGuzzleClient([
                 'base_uri' => sprintf('https://%s/', self::INSTAGRAM_API_ENDPOINT),
             ]);
         }
 
-        return $this->_guzzle;
+        return $this->guzzle;
     }
 }

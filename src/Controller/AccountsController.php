@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://gewerk.dev/plugins/social-media-connect
  * @copyright 2022 gewerk, Dennis Morhardt
@@ -60,7 +61,8 @@ class AccountsController extends Controller
         }
 
         // Get redirect URI from session
-        $redirectUri = Craft::$app->session->get('redirectUri', null) ?: UrlHelper::cpUrl('social-media-connect/accounts');
+        $redirectUri = Craft::$app->session->get('redirectUri', null) ?:
+            UrlHelper::cpUrl('social-media-connect/accounts');
 
         // Get token from provider
         $transaction = Craft::$app->getDb()->beginTransaction();

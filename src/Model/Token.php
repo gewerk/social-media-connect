@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://gewerk.dev/plugins/social-media-connect
  * @copyright 2022 gewerk, Dennis Morhardt
@@ -18,7 +19,7 @@ class Token extends Model
     /**
      * @event Event an event that is triggered after the record is created and populated with query result.
      */
-    const EVENT_AFTER_FIND = 'afterFind';
+    public const EVENT_AFTER_FIND = 'afterFind';
 
     /**
      * @var int Token ID
@@ -73,7 +74,7 @@ class Token extends Model
     /**
      * @var ProviderInterface
      */
-    private $_provider;
+    private $provider;
 
     /**
      * @inheritdoc
@@ -117,11 +118,11 @@ class Token extends Model
      */
     public function getProvider(): ProviderInterface
     {
-        if ($this->_provider === null) {
-            $this->_provider = SocialMediaConnect::$plugin->getProviders()->getProviderById($this->providerId);
+        if ($this->provider === null) {
+            $this->provider = SocialMediaConnect::$plugin->getProviders()->getProviderById($this->providerId);
         }
 
-        return $this->_provider;
+        return $this->provider;
     }
 
     /**

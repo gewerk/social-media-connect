@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://gewerk.dev/plugins/social-media-connect
  * @copyright 2022 gewerk, Dennis Morhardt
@@ -30,7 +31,7 @@ class MissingProvider extends AbstractProvider implements MissingComponentInterf
     /**
      * @inheritdoc
      */
-    public function handleCallback(Request $request): ?Token
+    public function handleCallback(Request $request): Token
     {
         throw new CallbackException('Provider is missing: Callback not possible');
     }

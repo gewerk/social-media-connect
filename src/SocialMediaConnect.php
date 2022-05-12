@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://gewerk.dev/plugins/social-media-connect
  * @copyright 2022 gewerk, Dennis Morhardt
@@ -99,9 +100,11 @@ class SocialMediaConnect extends Plugin
             $event->rules['social-media-connect'] = ['template' => 'social-media-connect/posts/index'];
             $event->rules['social-media-connect/accounts'] = ['template' => 'social-media-connect/accounts/index'];
             $event->rules['social-media-connect/accounts/callback'] = 'social-media-connect/accounts/callback';
-            $event->rules['settings/plugins/social-media-connect/providers'] = 'social-media-connect/providers/index';
-            $event->rules['settings/plugins/social-media-connect/providers/new'] = 'social-media-connect/providers/edit';
-            $event->rules['settings/plugins/social-media-connect/providers/edit/<providerId:\d+>'] = 'social-media-connect/providers/edit';
+
+            $settingsPrefix = 'settings/plugins/social-media-connect';
+            $event->rules["{$settingsPrefix}/providers"] = 'social-media-connect/providers/index';
+            $event->rules["{$settingsPrefix}/providers/new"] = 'social-media-connect/providers/edit';
+            $event->rules["{$settingsPrefix}/providers/edit/<providerId:\d+>"] = 'social-media-connect/providers/edit';
         });
 
         // Register Twig variable

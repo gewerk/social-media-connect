@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://gewerk.dev/plugins/social-media-connect
  * @copyright 2022 gewerk, Dennis Morhardt
@@ -67,12 +68,12 @@ class Account extends Element
     /**
      * @var User
      */
-    private $_connector;
+    private $connector;
 
     /**
      * @var Token
      */
-    private $_token;
+    private $token;
 
     /**
      * @inheritdoc
@@ -142,11 +143,11 @@ class Account extends Element
      */
     public function getToken(): Token
     {
-        if ($this->_token === null) {
-            $this->_token = SocialMediaConnect::$plugin->getTokens()->getTokenByAccount($this);
+        if ($this->token === null) {
+            $this->token = SocialMediaConnect::$plugin->getTokens()->getTokenByAccount($this);
         }
 
-        return $this->_token;
+        return $this->token;
     }
 
     /**
@@ -156,7 +157,7 @@ class Account extends Element
      */
     public function setToken(Token $token)
     {
-        $this->_token = $token;
+        $this->token = $token;
         $this->tokenId = $token->id;
     }
 
@@ -209,15 +210,15 @@ class Account extends Element
      */
     public function getConnector(): ?User
     {
-        if ($this->_connector === null) {
+        if ($this->connector === null) {
             if ($this->connectorId === null) {
                 return null;
             }
 
-            $this->_connector = Craft::$app->getUsers()->getUserById($this->connectorId);
+            $this->connector = Craft::$app->getUsers()->getUserById($this->connectorId);
         }
 
-        return $this->_connector;
+        return $this->connector;
     }
 
     /**
@@ -227,7 +228,7 @@ class Account extends Element
      */
     public function setConnector(User $connector = null)
     {
-        $this->_connector = $connector;
+        $this->connector = $connector;
         $this->connectorId = $connector->id ?? null;
     }
 
