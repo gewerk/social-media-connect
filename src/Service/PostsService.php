@@ -10,7 +10,7 @@ namespace Gewerk\SocialMediaConnect\Service;
 use craft\base\Component;
 use Gewerk\SocialMediaConnect\Collection\PostCollection;
 use Gewerk\SocialMediaConnect\Element\Account;
-use Gewerk\SocialMediaConnect\Exception\AccountMissingCapabilityException;
+use Gewerk\SocialMediaConnect\Exception\MissingCapabilityException;
 use Gewerk\SocialMediaConnect\Provider\Capability\PullPostsCapabilityInterface;
 
 /**
@@ -26,7 +26,7 @@ class PostsService extends Component
      * @param Account $account
      * @param int $limit
      * @return PostCollection
-     * @throws AccountMissingCapabilityException
+     * @throws MissingCapabilityException
      */
     public function pullPostsForAccount(Account $account, int $limit = 10): PostCollection
     {
@@ -36,8 +36,8 @@ class PostsService extends Component
             return $provider->getPosts($account, $limit);
         }
 
-        throw new AccountMissingCapabilityException(
-            $account,
+        throw new MissingCapabilityException(
+            $provider,
             PullPostsCapabilityInterface::class
         );
     }

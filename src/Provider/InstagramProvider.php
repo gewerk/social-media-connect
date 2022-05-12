@@ -82,13 +82,18 @@ class InstagramProvider extends AbstractProvider implements SupportsTokenRefresh
     /**
      * @inheritdoc
      */
-    public function refreshToken(Token $token): AccessTokenInterface
+    public function refreshToken(Token $token): Token
     {
         try {
             /** @var Instagram */
             $provider = $this->getConfiguredProvider();
+            $refreshedAccessToken = $provider->getRefreshedAccessToken($token->token);
 
-            return $provider->getRefreshedAccessToken($token->accessToken);
+            $token->token = $refreshedAccessToken->getToken();
+            $token->expiryDate = $refreshedAccessToken->getExpires() ? DateTime::createFromFormat('U', $refreshedAccessToken->getExpires()) : null;
+            $token->refreshToken = $refreshedAccessToken->getRefreshToken();
+
+            return $token;
         } catch (InstagramIdentityProviderException $e) {
             throw new TokenRefreshException($token, 0, $e);
         }

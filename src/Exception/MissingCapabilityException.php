@@ -7,10 +7,10 @@
 
 namespace Gewerk\SocialMediaConnect\Exception;
 
-use Gewerk\SocialMediaConnect\Element\Account;
+use Gewerk\SocialMediaConnect\Provider\ProviderInterface;
 use Throwable;
 
-class AccountMissingCapabilityException extends SocialMediaConnectException
+class MissingCapabilityException extends SocialMediaConnectException
 {
     /**
      * @var string
@@ -18,29 +18,28 @@ class AccountMissingCapabilityException extends SocialMediaConnectException
     public $capability;
 
     /**
-     * @var Account
+     * @var ProviderInterface
      */
-    public $account;
+    public $provider;
 
     /**
      * Constructs an exception for failing to refresh an access token
      *
-     * @param Account $account
+     * @param ProviderInterface $provider
      * @param string $capability
      * @param int $code
      * @param Throwable|null $previous
      * @return void
      */
-    public function __construct(Account $account, string $capability, int $code = 0, ?Throwable $previous = null)
+    public function __construct(ProviderInterface $provider, string $capability, int $code = 0, ?Throwable $previous = null)
     {
-        $this->account = $account;
+        $this->provider = $provider;
         $this->capability = $capability;
 
         parent::__construct(
             sprintf(
-                'Account %s (%s) misses the %s capability',
-                $this->account->identifier,
-                $this->account->getProvider()->displayName(),
+                'Provider %s misses the %s capability',
+                $this->provider->displayName(),
                 $this->capability
             ),
             $code,
@@ -59,12 +58,12 @@ class AccountMissingCapabilityException extends SocialMediaConnectException
     }
 
     /**
-     * Returns the offending account
+     * Returns the offending provider
      *
-     * @return Account
+     * @return ProviderInterface
      */
-    public function getAccount()
+    public function getProvider()
     {
-        return $this->account;
+        return $this->provider;
     }
 }

@@ -90,7 +90,7 @@ class Token extends Model
                 'providerId' => AttributeTypecastBehavior::TYPE_INTEGER,
                 'identifier' => AttributeTypecastBehavior::TYPE_STRING,
                 'token' => AttributeTypecastBehavior::TYPE_STRING,
-                'refreshToken' => AttributeTypecastBehavior::TYPE_INTEGER,
+                'refreshToken' => AttributeTypecastBehavior::TYPE_STRING,
                 'scopes' => fn ($value) => !is_array($value) ? explode(',', (string) $value) : $value,
                 'uid' => AttributeTypecastBehavior::TYPE_STRING,
             ],
@@ -132,6 +132,20 @@ class Token extends Model
     public function afterFind()
     {
         $this->trigger(self::EVENT_AFTER_FIND);
+    }
+
+    /**
+     * Returns if token is expired
+     *
+     * @return bool
+     */
+    public function isExpired(): bool
+    {
+        if ($this->expiryDate) {
+            return $this->expiryDate < (new DateTime());
+        }
+
+        return false;
     }
 
     /**

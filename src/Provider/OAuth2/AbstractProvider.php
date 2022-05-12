@@ -109,11 +109,9 @@ abstract class AbstractProvider extends BaseAbstractProvider implements Provider
      */
     public function getAccessToken(Request $request): AccessTokenInterface
     {
-        $provider = $this->getConfiguredProvider();
-
-        return $provider->getAccessToken(
-            $request->getRequiredQueryParam('code')
-        );
+        return $this->getConfiguredProvider()->getAccessToken('authorization_code', [
+            'code' => $request->getRequiredQueryParam('code'),
+        ]);
     }
 
     /**
@@ -164,13 +162,11 @@ abstract class AbstractProvider extends BaseAbstractProvider implements Provider
             throw new CallbackException('OAuth2 state miss match');
         }
 
-        $accessToken = $this->getConfiguredProvider()->getAccessToken('authorization_code', [
-            'code' => $request->getRequiredQueryParam('code'),
-        ]);
+        $accessToken = $this->getAccessToken($request);
 
         $token = new Token();
         $token->token = $accessToken->getToken();
-        $token->expiryDate = $accessToken->getExpires() ? new DateTime("+ {$accessToken->getExpires()}seconds") : null;
+        $token->expiryDate = $accessToken->getExpires() ? DateTime::createFromFormat('U', $accessToken->getExpires()) : null;
         $token->refreshToken = $accessToken->getRefreshToken();
         $token->scopes = $this->getScopes();
         $token->identifier = $this->getIdentifier($token);

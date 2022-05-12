@@ -8,7 +8,6 @@
 namespace Gewerk\SocialMediaConnect\Provider\OAuth2;
 
 use Gewerk\SocialMediaConnect\Model\Token;
-use League\OAuth2\Client\Token\AccessTokenInterface;
 
 /**
  * Providers which need refreshing of access tokens should implement
@@ -22,7 +21,7 @@ interface SupportsTokenRefreshingInterface
      * Refreshes the access token
      *
      * @param Token $token
-     * @return AccessTokenInterface
+     * @return Token
      */
-    public function refreshToken(Token $token): AccessTokenInterface;
+    public function refreshToken(Token $token): Token;
 }

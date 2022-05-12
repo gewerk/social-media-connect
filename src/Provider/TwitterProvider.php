@@ -14,17 +14,21 @@ use Gewerk\SocialMediaConnect\Collection\AccountCollection;
 use Gewerk\SocialMediaConnect\Collection\PostCollection;
 use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Element\Post;
+use Gewerk\SocialMediaConnect\Exception\TokenRefreshException;
 use Gewerk\SocialMediaConnect\Model\Token;
 use Gewerk\SocialMediaConnect\Plugin;
 use Gewerk\SocialMediaConnect\Provider\Capability\ComposingCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\Capability\PullPostsCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\OAuth2\AbstractProvider;
+use Gewerk\SocialMediaConnect\Provider\OAuth2\SupportsTokenRefreshingInterface;
 use Gewerk\SocialMediaConnect\Provider\PostPayload\TwitterPostPayload;
 use Gewerk\SocialMediaConnect\Provider\Share\AbstractShare;
 use Gewerk\SocialMediaConnect\Provider\Share\TwitterShare;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
+use Throwable;
 use Twitter\Text\Autolink;
 use Twitter\Text\Extractor;
 
@@ -33,7 +37,7 @@ use Twitter\Text\Extractor;
  *
  * @package Gewerk\SocialMediaConnect\Provider
  */
-class TwitterProvider extends AbstractProvider implements ComposingCapabilityInterface, PullPostsCapabilityInterface
+class TwitterProvider extends AbstractProvider implements ComposingCapabilityInterface, PullPostsCapabilityInterface, SupportsTokenRefreshingInterface
 {
     const TWITTER_API_ENDPOINT = 'api.twitter.com';
     const TWITTER_API_VERSION = '2';
@@ -111,7 +115,7 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
         $options['scopeSeparator'] = ' ';
         $options['urlAuthorize'] = 'https://twitter.com/i/oauth2/authorize?code_challenge=challenge&code_challenge_method=plain';
         $options['urlAccessToken'] = 'https://api.twitter.com/2/oauth2/token?code_verifier=challenge';
-        $options['urlResourceOwnerDetails'] = 'https://api.twitter.com/1.1/account/verify_credentials';
+        $options['urlResourceOwnerDetails'] = '';
 
         return $options;
     }
@@ -130,6 +134,29 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
     public function supportsPulling(Account $account): bool
     {
         return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function refreshToken(Token $token): Token
+    {
+        try {
+            /** @var GenericProvider */
+            $provider = $this->getConfiguredProvider();
+            $refreshedAccessToken = $provider->getAccessToken('refresh_token', [
+                'refresh_token' => $token->refreshToken,
+                'client_id' => $this->clientId,
+            ]);
+
+            $token->token = $refreshedAccessToken->getToken();
+            $token->expiryDate = $refreshedAccessToken->getExpires() ? DateTime::createFromFormat('U', $refreshedAccessToken->getExpires()) : null;
+            $token->refreshToken = $refreshedAccessToken->getRefreshToken();
+
+            return $token;
+        } catch (IdentityProviderException $e) {
+            throw new TokenRefreshException($token, 0, $e);
+        }
     }
 
     /**
@@ -165,13 +192,22 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
      */
     public function publishShare(AbstractShare $share): AbstractShare
     {
-        /** @var TwitterShare $share */
+        $account = $share->getAccount();
+        $token = $account->getToken();
 
-        // Publish to Facebook
+        // Refresh access token if it expired
+        if ($token->isExpired()) {
+            try {
+                Plugin::$plugin->getTokens()->refreshToken($token);
+            } catch (Throwable $e) {
+                Craft::warning($e->getTraceAsString());
+            }
+        }
+
+        // Publish to Twitter
         try {
+            /** @var TwitterShare $share */
             $entry = $share->getEntry();
-            $account = $share->getAccount();
-            $token = $account->getToken();
             $response = $this->getGuzzleClient()->post('tweets', [
                 'json' => [
                     'text' => $share->message . ' ' . $entry->getUrl(),
@@ -281,6 +317,15 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
      */
     public function getAccounts(Token $token): AccountCollection
     {
+        // Refresh access token if it expired
+        if ($token->isExpired()) {
+            try {
+                Plugin::$plugin->getTokens()->refreshToken($token);
+            } catch (Throwable $e) {
+                Craft::warning($e->getTraceAsString());
+            }
+        }
+
         // Query current token user
         $response = $this->getGuzzleClient()->get('users/me', [
             'headers' => [
@@ -314,8 +359,17 @@ class TwitterProvider extends AbstractProvider implements ComposingCapabilityInt
      */
     public function getPosts(Account $account, int $limit = 10): PostCollection
     {
-        // Get timeline
+        // Refresh access token if it expired
         $token = $account->getToken();
+        if ($token->isExpired()) {
+            try {
+                Plugin::$plugin->getTokens()->refreshToken($token);
+            } catch (Throwable $e) {
+                Craft::warning($e->getTraceAsString());
+            }
+        }
+
+        // Get timeline
         $response = $this->getGuzzleClient()->get("users/{$account->identifier}/tweets", [
             'headers' => [
                 'Authorization' => "Bearer {$token->token}",
