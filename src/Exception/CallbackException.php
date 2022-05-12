@@ -10,6 +10,11 @@ namespace Gewerk\SocialMediaConnect\Exception;
 
 use Throwable;
 
+/**
+ * Exception thrown if a OAuth callback fails
+ *
+ * @package Gewerk\SocialMediaConnect\Exception
+ */
 class CallbackException extends SocialMediaConnectException
 {
     /**

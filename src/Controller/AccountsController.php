@@ -19,6 +19,11 @@ use yii\db\Exception;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
+/**
+ * Actions to manage social media accounts
+ *
+ * @package Gewerk\SocialMediaConnect\Controller
+ */
 class AccountsController extends Controller
 {
     /**

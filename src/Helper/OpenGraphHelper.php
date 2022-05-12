@@ -14,6 +14,11 @@ use Fusonic\OpenGraph\Objects\ObjectBase;
 use GuzzleHttp\Psr7\HttpFactory;
 use Psr\Http\Client\ClientExceptionInterface;
 
+/**
+ * Open Graph related helpers
+ *
+ * @package Gewerk\SocialMediaConnect\Helper
+ */
 class OpenGraphHelper
 {
     /**

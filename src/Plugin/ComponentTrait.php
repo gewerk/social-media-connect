@@ -13,6 +13,11 @@ use Gewerk\SocialMediaConnect\Service\ShareService;
 use Gewerk\SocialMediaConnect\Service\ProvidersService;
 use Gewerk\SocialMediaConnect\Service\TokensService;
 
+/**
+ * Component loader trait for this plugin
+ *
+ * @package Gewerk\SocialMediaConnect\Plugin
+ */
 trait ComponentTrait
 {
     /**

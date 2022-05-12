@@ -8,10 +8,15 @@
 
 namespace Gewerk\SocialMediaConnect\Collection;
 
+use Gewerk\SocialMediaConnect\Element\Post;
 use Gewerk\SocialMediaConnect\Exception\InvalidCollectionItemException;
-use Gewerk\SocialMediaConnect\Provider\Post\AbstractPost;
 use Illuminate\Support\Collection;
 
+/**
+ * Collection of posts
+ *
+ * @package Gewerk\SocialMediaConnect\Collection
+ */
 class PostCollection extends Collection
 {
     /**
@@ -20,7 +25,7 @@ class PostCollection extends Collection
     public function __construct($items = [])
     {
         foreach ($items as $item) {
-            if (!($item instanceof AbstractPost)) {
+            if (!($item instanceof Post)) {
                 throw new InvalidCollectionItemException($item, $this);
             }
         }

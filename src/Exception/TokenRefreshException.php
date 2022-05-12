@@ -11,6 +11,11 @@ namespace Gewerk\SocialMediaConnect\Exception;
 use Gewerk\SocialMediaConnect\Model\Token;
 use Throwable;
 
+/**
+ * Thrown if a token refresh fails
+ *
+ * @package Gewerk\SocialMediaConnect\Exception
+ */
 class TokenRefreshException extends SocialMediaConnectException
 {
     /**

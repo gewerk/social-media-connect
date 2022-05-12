@@ -25,6 +25,11 @@ use Gewerk\SocialMediaConnect\Provider\ProviderInterface;
 use Gewerk\SocialMediaConnect\Record\Provider as ProviderRecord;
 use Throwable;
 
+/**
+ * Service component for managing providers
+ *
+ * @package Gewerk\SocialMediaConnect\Service
+ */
 class ProvidersService extends Component
 {
     public const CONFIG_KEY = 'socialMediaConnect.providers';
@@ -91,7 +96,7 @@ class ProvidersService extends Component
     /**
      * Returns a provider by UID
      *
-     * @param int $uid
+     * @param string $uid
      * @return ProviderInterface|null
      */
     public function getProviderByUid(string $uid)
@@ -102,7 +107,7 @@ class ProvidersService extends Component
     /**
      * Returns a provider by handle
      *
-     * @param int $handle
+     * @param string $handle
      * @return ProviderInterface|null
      */
     public function getProviderByHandle(string $handle)

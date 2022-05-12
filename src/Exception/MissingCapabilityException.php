@@ -11,6 +11,11 @@ namespace Gewerk\SocialMediaConnect\Exception;
 use Gewerk\SocialMediaConnect\Provider\ProviderInterface;
 use Throwable;
 
+/**
+ * Thrown if a provider misses a capability
+ *
+ * @package Gewerk\SocialMediaConnect\Exception
+ */
 class MissingCapabilityException extends SocialMediaConnectException
 {
     /**

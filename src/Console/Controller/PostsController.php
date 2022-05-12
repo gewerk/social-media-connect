@@ -26,6 +26,7 @@ class PostsController extends Controller
     /**
      * Publishes shares
      *
+     * @param int $limit
      * @return int
      */
     public function actionPull(int $limit = 10): int

@@ -18,6 +18,11 @@ use Gewerk\SocialMediaConnect\Model\Token;
 use Gewerk\SocialMediaConnect\Provider\OAuth2\SupportsTokenRefreshingInterface;
 use Gewerk\SocialMediaConnect\Record;
 
+/**
+ * Service component for managing tokens
+ *
+ * @package Gewerk\SocialMediaConnect\Service
+ */
 class TokensService extends Component
 {
     /**

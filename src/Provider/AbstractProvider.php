@@ -51,7 +51,7 @@ abstract class AbstractProvider extends SavableComponent implements ProviderInte
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getName(): string
     {
@@ -59,7 +59,7 @@ abstract class AbstractProvider extends SavableComponent implements ProviderInte
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getHandle(): string
     {
@@ -67,7 +67,7 @@ abstract class AbstractProvider extends SavableComponent implements ProviderInte
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getEnabled(): bool
     {
@@ -75,7 +75,7 @@ abstract class AbstractProvider extends SavableComponent implements ProviderInte
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getSortOrder(): int
     {
@@ -83,7 +83,7 @@ abstract class AbstractProvider extends SavableComponent implements ProviderInte
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getUid(): string
     {
@@ -91,7 +91,7 @@ abstract class AbstractProvider extends SavableComponent implements ProviderInte
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getCpEditUrl(): string
     {

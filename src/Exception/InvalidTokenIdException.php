@@ -10,6 +10,11 @@ namespace Gewerk\SocialMediaConnect\Exception;
 
 use Throwable;
 
+/**
+ * Exception thrown if a token ID is invalid
+ *
+ * @package Gewerk\SocialMediaConnect\Exception
+ */
 class InvalidTokenIdException extends SocialMediaConnectException
 {
     /**

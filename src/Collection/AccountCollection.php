@@ -12,6 +12,11 @@ use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Exception\InvalidCollectionItemException;
 use Illuminate\Support\Collection;
 
+/**
+ * Collections of accounts
+ *
+ * @package Gewerk\SocialMediaConnect\Collection
+ */
 class AccountCollection extends Collection
 {
     /**

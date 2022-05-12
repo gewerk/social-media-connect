@@ -28,6 +28,11 @@ use Gewerk\SocialMediaConnect\Provider\ProviderInterface;
 use Gewerk\SocialMediaConnect\Record\Account as AccountRecord;
 use yii\base\InvalidConfigException;
 
+/**
+ * An account element
+ *
+ * @package Gewerk\SocialMediaConnect\Element
+ */
 class Account extends Element
 {
     /**
@@ -154,6 +159,7 @@ class Account extends Element
      * Sets the token for this social media account
      *
      * @param Token $token
+     * @return void
      */
     public function setToken(Token $token)
     {
@@ -225,6 +231,7 @@ class Account extends Element
      * Sets the connector of this account
      *
      * @param User $connector
+     * @return void
      */
     public function setConnector(User $connector = null)
     {

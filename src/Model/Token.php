@@ -14,6 +14,11 @@ use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Provider\ProviderInterface;
 use yii\behaviors\AttributeTypecastBehavior;
 
+/**
+ * Token model
+ *
+ * @package Gewerk\SocialMediaConnect\Model
+ */
 class Token extends Model
 {
     /**

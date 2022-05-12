@@ -10,6 +10,11 @@ namespace Gewerk\SocialMediaConnect\Model;
 
 use craft\base\Model;
 
+/**
+ * Settings model for this plugin
+ *
+ * @package Gewerk\SocialMediaConnect\Model
+ */
 class Settings extends Model
 {
     /**

@@ -12,8 +12,19 @@ use craft\helpers\Html;
 use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Provider\ProviderInterface;
 
+/**
+ * Element Index related helpers
+ *
+ * @package Gewerk\SocialMediaConnect\Helper
+ */
 class ElementIndexHelper
 {
+    /**
+     * Renders a provider for an element index
+     *
+     * @param ProviderInterface $provider
+     * @return string
+     */
     public static function provider(ProviderInterface $provider): string
     {
         $providersService = SocialMediaConnect::$plugin->getProviders();

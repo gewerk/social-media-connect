@@ -10,6 +10,11 @@ namespace Gewerk\SocialMediaConnect\Exception;
 
 use RuntimeException;
 
-class SocialMediaConnectException extends RuntimeException
+/**
+ * Abstract base for all exceptions in this plugin
+ *
+ * @package Gewerk\SocialMediaConnect\Exception
+ */
+abstract class SocialMediaConnectException extends RuntimeException
 {
 }

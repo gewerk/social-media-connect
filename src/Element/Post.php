@@ -23,6 +23,11 @@ use Gewerk\SocialMediaConnect\Record\Post as PostRecord;
 use yii\base\Exception;
 use yii\db\Expression;
 
+/**
+ * A post element
+ *
+ * @package Gewerk\SocialMediaConnect\Element
+ */
 class Post extends Element
 {
     /**
@@ -125,7 +130,7 @@ class Post extends Element
     /**
      * Sets payload for this post
      *
-     * @param AbstractPostPayload $account
+     * @param AbstractPostPayload $payload
      * @return void
      */
     public function setPayload(AbstractPostPayload $payload): void

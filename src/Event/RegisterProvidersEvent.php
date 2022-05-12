@@ -10,6 +10,11 @@ namespace Gewerk\SocialMediaConnect\Event;
 
 use yii\base\Event;
 
+/**
+ * List of registered providers event
+ *
+ * @package Gewerk\SocialMediaConnect\Event
+ */
 class RegisterProvidersEvent extends Event
 {
     /**
