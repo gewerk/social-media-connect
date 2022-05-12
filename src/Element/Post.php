@@ -233,7 +233,7 @@ class Post extends Element
     protected static function defineTableAttributes(): array
     {
         $attributes = [
-            'id' => ['label' => Craft::t('social-media-connect', 'ID')],
+            'label' => ['label' => ''],
             'post' => ['label' => Craft::t('social-media-connect', 'Post')],
             'account' => ['label' => Craft::t('social-media-connect', 'Account')],
             'provider' => ['label' => Craft::t('social-media-connect', 'Provider')],
@@ -335,16 +335,10 @@ class Post extends Element
     }
 
     /**
-     * Returns the string representation of the element.
-     *
-     * @return string
+     * @inheritdoc
      */
-    public function __toString()
+    protected function uiLabel(): ?string
     {
-        if (!empty($this->identifier)) {
-            return $this->identifier;
-        }
-
-        return (string) $this->id ?: static::class;
+        return '';
     }
 }
