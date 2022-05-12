@@ -13,17 +13,22 @@ use craft\helpers\UrlHelper;
 use craft\web\Request;
 use DateTime;
 use Gewerk\SocialMediaConnect\Collection\AccountCollection;
+use Gewerk\SocialMediaConnect\Collection\PostCollection;
 use Gewerk\SocialMediaConnect\Element\Account;
+use Gewerk\SocialMediaConnect\Element\Post;
 use Gewerk\SocialMediaConnect\Exception\TokenRefreshException;
 use Gewerk\SocialMediaConnect\Model\Token;
+use Gewerk\SocialMediaConnect\Provider\Capability\PullPostsCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\OAuth2\AbstractProvider;
 use Gewerk\SocialMediaConnect\Provider\OAuth2\SupportsTokenRefreshingInterface;
+use Gewerk\SocialMediaConnect\Provider\PostPayload\InstagramPostPayload;
 use GuzzleHttp\Client as GuzzleClient;
 use League\OAuth2\Client\Provider\Exception\InstagramIdentityProviderException;
 use League\OAuth2\Client\Provider\Instagram;
 use League\OAuth2\Client\Token\AccessTokenInterface;
+use VStelmakh\UrlHighlight\UrlHighlight;
 
-class InstagramProvider extends AbstractProvider implements SupportsTokenRefreshingInterface
+class InstagramProvider extends AbstractProvider implements SupportsTokenRefreshingInterface, PullPostsCapabilityInterface
 {
     const INSTAGRAM_API_ENDPOINT = 'graph.instagram.com';
 
@@ -46,6 +51,14 @@ class InstagramProvider extends AbstractProvider implements SupportsTokenRefresh
     public static function icon(): ?string
     {
         return '@social-media-connect/resources/icons/instagram.svg';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getPostPayloadClass(): string
+    {
+        return InstagramPostPayload::class;
     }
 
     /**
@@ -194,9 +207,72 @@ class InstagramProvider extends AbstractProvider implements SupportsTokenRefresh
     }
 
     /**
-     * Returns a Guzzle client with Graph API as base URI
-     *
-     * @return GuzzleClient
+     * @inheritdoc
+     */
+    public function supportsPulling(Account $account): bool
+    {
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPosts(Account $account, int $limit = 10): PostCollection
+    {
+        // Get posts for this account
+        $token = $account->getToken();
+        $response = $this->getGuzzleClient()->get('me/media', [
+            'query' => [
+                'fields' => 'caption,id,media_type,media_url,permalink,thumbnail_url,timestamp',
+                'limit' => $limit,
+                'access_token' => $token->token,
+            ],
+        ]);
+
+        // Get body
+        $feed = json_decode((string) $response->getBody(), true);
+        $posts = new PostCollection();
+        $urlHighlight = new UrlHighlight();
+
+        // Process posts
+        foreach ($feed['data'] as $feedPost) {
+            // Find or create social media post
+            $post = Post::findOneOrCreate([
+                'account' => $account,
+                'identifier' => $feedPost['id'],
+            ]);
+
+            // Set post date
+            $post->type = self::getPostPayloadClass();
+            $post->postedAt = DateTime::createFromFormat(DateTime::ISO8601, $feedPost['timestamp']);
+            $post->url = $feedPost['permalink'];
+
+            /** @var InstagramPostPayload */
+            $payload = $post->getPayload();
+            $payload->type = $feedPost['media_type'] === 'CAROUSEL_ALBUM' ? 'gallery' : strtolower($feedPost['media_type']);
+            $payload->text = $urlHighlight->highlightUrls($feedPost['caption'] ?? '');
+            $payload->videoUrl = $feedPost['media_type'] === 'VIDEO' ? $feedPost['media_url'] : null;
+            $payload->imageUrl = $feedPost['thumbnail_url'] ?? $feedPost['media_url'] ?? null;
+
+            // Save post
+            if (Craft::$app->getElements()->saveElement($post)) {
+                $posts->add($post);
+            }
+        }
+
+        return $posts;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPostAttributeHtml(Post $post): string
+    {
+        return $post->getPayload()->text;
+    }
+
+    /**
+     * @inheritdoc
      */
     private function getGuzzleClient(): GuzzleClient
     {
