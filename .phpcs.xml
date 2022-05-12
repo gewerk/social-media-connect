@@ -1,19 +1,37 @@
 <?xml version="1.0"?>
 <ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="PHP_CodeSniffer" xsi:noNamespaceSchemaLocation="phpcs.xsd">
+  <!-- Settings -->
+  <arg name="basepath" value="." />
+  <arg name="cache" value=".phpcs-cache" />
+  <arg name="colors" />
+  <arg name="extensions" value="php" />
+
+  <!-- Paths to check -->
+  <file>src/</file>
+
   <!-- Exclude the Composer Vendor directory. -->
   <exclude-pattern>/vendor/*</exclude-pattern>
 
   <!-- Exclude the Node Modules directory. -->
   <exclude-pattern>/node_modules/*</exclude-pattern>
 
-  <!-- Include the Yii2 Coding Standard -->
-  <rule ref="Yii2" />
+  <!-- Include the PSR12 Coding Standard -->
+  <rule ref="PSR12" />
 
-  <!-- Warn about unused function parameters excepted in extended classes -->
+  <!-- Warn about unused function parameters excepted in extended/implemented classes -->
   <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter">
     <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInExtendedClass" />
+    <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter.FoundInImplementedInterface" />
   </rule>
 
-  <!-- Warn about TODO: comments -->
+  <!-- Warn about TODO comments (please use issues instead) -->
   <rule ref="Generic.Commenting.Todo" />
+
+  <!-- Use always single quotes, except the string contains a variable -->
+  <rule ref="Squiz.Strings.DoubleQuoteUsage">
+    <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar" />
+  </rule>
+
+  <!-- Use the short array syntax -->
+  <rule ref="Generic.Arrays.DisallowLongArraySyntax" />
 </ruleset>
