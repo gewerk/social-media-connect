@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2 - 2022-05-14
+
+* Remove dependency on illuminate/collections
+
 ## 0.1.1 - 2022-05-14
 
 * Allow version ^1 of guzzlehttp/psr7 too
