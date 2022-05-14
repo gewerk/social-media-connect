@@ -13,8 +13,6 @@ use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
 use craft\helpers\Html;
 use DateTime;
-use Gewerk\SocialMediaConnect\Collection\AccountCollection;
-use Gewerk\SocialMediaConnect\Collection\PostCollection;
 use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Element\Post;
 use Gewerk\SocialMediaConnect\Model\Token;
@@ -31,6 +29,11 @@ use League\OAuth2\Client\Provider\AppSecretProof;
 use League\OAuth2\Client\Provider\Facebook;
 use VStelmakh\UrlHighlight\UrlHighlight;
 
+/**
+ * Facebook pages provider
+ *
+ * @package Gewerk\SocialMediaConnect\Provider
+ */
 class FacebookPagesProvider extends AbstractProvider implements
     ComposingCapabilityInterface,
     PullPostsCapabilityInterface
@@ -271,7 +274,7 @@ class FacebookPagesProvider extends AbstractProvider implements
     /**
      * @inheritdoc
      */
-    public function getAccounts(Token $token): AccountCollection
+    public function handleAccounts(Token $token): void
     {
         // Get page tokens
         $appSecretProof = AppSecretProof::create($this->clientSecret, $token->token);
@@ -281,9 +284,6 @@ class FacebookPagesProvider extends AbstractProvider implements
                 'access_token' => $token->token,
             ],
         ]);
-
-        // Prepare accounts collection
-        $accounts = new AccountCollection();
 
         // Get all pages from request
         $body = json_decode((string) $response->getBody(), true);
@@ -323,12 +323,7 @@ class FacebookPagesProvider extends AbstractProvider implements
 
             // Save account
             Craft::$app->getElements()->saveElement($account);
-
-            // Add to collection
-            $accounts->add($account);
         }
-
-        return $accounts;
     }
 
     /**
@@ -342,7 +337,7 @@ class FacebookPagesProvider extends AbstractProvider implements
     /**
      * @inheritdoc
      */
-    public function getPosts(Account $account, int $limit = 10): PostCollection
+    public function handlePosts(Account $account, int $limit = 10): void
     {
         // Get posts for this account
         $token = $account->settings['access_token'];
@@ -373,7 +368,6 @@ class FacebookPagesProvider extends AbstractProvider implements
 
         // Get body
         $feed = json_decode((string) $response->getBody(), true);
-        $posts = new PostCollection();
         $urlHighlight = new UrlHighlight();
 
         // Process posts
@@ -453,12 +447,8 @@ class FacebookPagesProvider extends AbstractProvider implements
             }
 
             // Save post
-            if (Craft::$app->getElements()->saveElement($post)) {
-                $posts->add($post);
-            }
+            Craft::$app->getElements()->saveElement($post);
         }
-
-        return $posts;
     }
 
     /**

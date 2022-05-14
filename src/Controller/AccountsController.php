@@ -93,7 +93,7 @@ class AccountsController extends Controller
             $token->id = $tokenRecord->id;
 
             // Handle accounts
-            $provider->getAccounts($token);
+            $provider->handleAccounts($token);
 
             $transaction->commit();
         } catch (CallbackException $e) {

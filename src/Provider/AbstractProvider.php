@@ -9,12 +9,13 @@
 namespace Gewerk\SocialMediaConnect\Provider;
 
 use craft\base\SavableComponent;
-use craft\helpers\Component;
 use craft\helpers\UrlHelper;
-use Gewerk\SocialMediaConnect\Collection\AccountCollection;
-use Gewerk\SocialMediaConnect\Element\Account;
-use Gewerk\SocialMediaConnect\Model\Token;
 
+/**
+ * Abstract provider implementation
+ *
+ * @package Gewerk\SocialMediaConnect\Provider
+ */
 abstract class AbstractProvider extends SavableComponent implements ProviderInterface
 {
     /**
@@ -96,13 +97,5 @@ abstract class AbstractProvider extends SavableComponent implements ProviderInte
     public function getCpEditUrl(): string
     {
         return UrlHelper::cpUrl("settings/plugins/social-media-connect/providers/edit/{$this->id}");
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getAccounts(Token $token): AccountCollection
-    {
-        return new AccountCollection([]);
     }
 }

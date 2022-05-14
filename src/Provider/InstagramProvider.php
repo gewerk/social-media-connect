@@ -13,8 +13,6 @@ use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
 use craft\web\Request;
 use DateTime;
-use Gewerk\SocialMediaConnect\Collection\AccountCollection;
-use Gewerk\SocialMediaConnect\Collection\PostCollection;
 use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Element\Post;
 use Gewerk\SocialMediaConnect\Exception\TokenRefreshException;
@@ -29,6 +27,11 @@ use League\OAuth2\Client\Provider\Instagram;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use VStelmakh\UrlHighlight\UrlHighlight;
 
+/**
+ * Instagram provider
+ *
+ * @package Gewerk\SocialMediaConnect\Provider
+ */
 class InstagramProvider extends AbstractProvider implements
     SupportsTokenRefreshingInterface,
     PullPostsCapabilityInterface
@@ -182,7 +185,7 @@ class InstagramProvider extends AbstractProvider implements
     /**
      * @inheritdoc
      */
-    public function getAccounts(Token $token): AccountCollection
+    public function handleAccounts(Token $token): void
     {
         // Query current token user
         $response = $this->getGuzzleClient()->get('me', [
@@ -214,8 +217,6 @@ class InstagramProvider extends AbstractProvider implements
 
         // Save account
         Craft::$app->getElements()->saveElement($account);
-
-        return new AccountCollection([$account]);
     }
 
     /**
@@ -229,7 +230,7 @@ class InstagramProvider extends AbstractProvider implements
     /**
      * @inheritdoc
      */
-    public function getPosts(Account $account, int $limit = 10): PostCollection
+    public function handlePosts(Account $account, int $limit = 10): void
     {
         // Get posts for this account
         $token = $account->getToken();
@@ -243,7 +244,6 @@ class InstagramProvider extends AbstractProvider implements
 
         // Get body
         $feed = json_decode((string) $response->getBody(), true);
-        $posts = new PostCollection();
         $urlHighlight = new UrlHighlight();
 
         // Process posts
@@ -273,12 +273,8 @@ class InstagramProvider extends AbstractProvider implements
             $payload->imageUrl = $feedPost['thumbnail_url'] ?? $feedPost['media_url'] ?? null;
 
             // Save post
-            if (Craft::$app->getElements()->saveElement($post)) {
-                $posts->add($post);
-            }
+            Craft::$app->getElements()->saveElement($post);
         }
-
-        return $posts;
     }
 
     /**

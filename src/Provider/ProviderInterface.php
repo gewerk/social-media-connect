@@ -11,7 +11,6 @@ namespace Gewerk\SocialMediaConnect\Provider;
 use craft\base\SavableComponentInterface;
 use craft\web\Request;
 use craft\web\Response;
-use Gewerk\SocialMediaConnect\Collection\AccountCollection;
 use Gewerk\SocialMediaConnect\Exception\CallbackException;
 use Gewerk\SocialMediaConnect\Model\Token;
 
@@ -57,7 +56,7 @@ interface ProviderInterface extends SavableComponentInterface
      * Creates or updates accounts from an access token
      *
      * @param Token $token
-     * @return AccountCollection
+     * @return void
      */
-    public function getAccounts(Token $token): AccountCollection;
+    public function handleAccounts(Token $token): void;
 }

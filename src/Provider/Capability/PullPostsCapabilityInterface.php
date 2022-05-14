@@ -8,10 +8,14 @@
 
 namespace Gewerk\SocialMediaConnect\Provider\Capability;
 
-use Gewerk\SocialMediaConnect\Collection\PostCollection;
 use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Element\Post;
 
+/**
+ * Adds pulling of posts feature to a provider
+ *
+ * @package Gewerk\SocialMediaConnect\Provider\Capability
+ */
 interface PullPostsCapabilityInterface
 {
     /**
@@ -34,9 +38,9 @@ interface PullPostsCapabilityInterface
      *
      * @param Account $account
      * @param int $limit
-     * @return PostCollection
+     * @return void
      */
-    public function getPosts(Account $account, int $limit = 10): PostCollection;
+    public function handlePosts(Account $account, int $limit = 10): void;
 
     /**
      * Renders a post for element index of all posts

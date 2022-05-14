@@ -11,8 +11,6 @@ namespace Gewerk\SocialMediaConnect\Provider;
 use Craft;
 use craft\helpers\Cp;
 use DateTime;
-use Gewerk\SocialMediaConnect\Collection\AccountCollection;
-use Gewerk\SocialMediaConnect\Collection\PostCollection;
 use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Element\Post;
 use Gewerk\SocialMediaConnect\Exception\TokenRefreshException;
@@ -321,7 +319,7 @@ class TwitterProvider extends AbstractProvider implements
     /**
      * @inheritdoc
      */
-    public function getAccounts(Token $token): AccountCollection
+    public function handleAccounts(Token $token): void
     {
         // Refresh access token if it expired
         if ($token->isExpired()) {
@@ -361,14 +359,12 @@ class TwitterProvider extends AbstractProvider implements
 
         // Save account
         Craft::$app->getElements()->saveElement($account);
-
-        return new AccountCollection([$account]);
     }
 
     /**
      * @inheritdoc
      */
-    public function getPosts(Account $account, int $limit = 10): PostCollection
+    public function handlePosts(Account $account, int $limit = 10): void
     {
         // Refresh access token if it expired
         $token = $account->getToken();
@@ -396,7 +392,6 @@ class TwitterProvider extends AbstractProvider implements
 
         // Get body from request
         $body = json_decode((string) $response->getBody(), true);
-        $posts = new PostCollection();
 
         // Process posts
         foreach ($body['data'] as $tweet) {
@@ -422,12 +417,8 @@ class TwitterProvider extends AbstractProvider implements
             $payload->text = $this->autolinkTweet($tweet['text'], $tweet['entities'] ?? []);
 
             // Save post
-            if (Craft::$app->getElements()->saveElement($post)) {
-                $posts->add($post);
-            }
+            Craft::$app->getElements()->saveElement($post);
         }
-
-        return $posts;
     }
 
     /**
