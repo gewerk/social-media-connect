@@ -334,7 +334,7 @@ class Post extends Element
                     }
                 },
                 'attribute' => 'postedAt',
-                'defaultDir' => 'asc',
+                'defaultDir' => 'desc',
             ],
         ];
     }
