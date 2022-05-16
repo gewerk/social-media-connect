@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0 - 2022-05-16
+
+* Fix sorting order for posts
+* Localize accounts and posts
+
 ## 0.1.2 - 2022-05-14
 
 * Remove dependency on illuminate/collections
