@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3 - 2022-05-17
+
+* Add missing http request factory
+
 ## 0.2.2 - 2022-05-17
 
 * Fix composing after localizing accounts
