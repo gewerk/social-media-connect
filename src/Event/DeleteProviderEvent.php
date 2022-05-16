@@ -12,19 +12,14 @@ use Gewerk\SocialMediaConnect\Provider\OAuth2\ProviderInterface;
 use yii\base\Event;
 
 /**
- * This event is used if a provider is saved
+ * This event is used if a provider is deleted
  *
  * @package Gewerk\SocialMediaConnect\Event
  */
-class ProviderEvent extends Event
+class DeleteProviderEvent extends Event
 {
     /**
      * @var ProviderInterface Saved provider
      */
     public $provider;
-
-    /**
-     * @var bool Is provider newly created?
-     */
-    public $isNew = false;
 }

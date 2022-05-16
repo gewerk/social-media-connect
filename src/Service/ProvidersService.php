@@ -18,6 +18,7 @@ use craft\helpers\Component as ComponentHelper;
 use craft\helpers\Db;
 use craft\helpers\ProjectConfig;
 use craft\helpers\StringHelper;
+use Gewerk\SocialMediaConnect\Event\DeleteProviderEvent;
 use Gewerk\SocialMediaConnect\Event\ProviderEvent;
 use Gewerk\SocialMediaConnect\Event\RegisterProvidersEvent;
 use Gewerk\SocialMediaConnect\Provider;
@@ -151,7 +152,7 @@ class ProvidersService extends Component
         if ($this->hasEventHandlers(self::EVENT_BEFORE_SAVE_PROVIDER)) {
             $this->trigger(self::EVENT_BEFORE_SAVE_PROVIDER, new ProviderEvent([
                 'provider' => $provider,
-                'isNew' => $isNew
+                'isNew' => $isNew,
             ]));
         }
 
@@ -196,8 +197,8 @@ class ProvidersService extends Component
     public function deleteProvider(ProviderInterface $provider): bool
     {
         if ($this->hasEventHandlers(self::EVENT_BEFORE_DELETE_PROVIDER)) {
-            $this->trigger(self::EVENT_BEFORE_DELETE_PROVIDER, new ProviderEvent([
-                'provider' => $provider
+            $this->trigger(self::EVENT_BEFORE_DELETE_PROVIDER, new DeleteProviderEvent([
+                'provider' => $provider,
             ]));
         }
 
@@ -367,7 +368,7 @@ class ProvidersService extends Component
         $provider = $this->getProviderById($providerRecord->id);
 
         if ($this->hasEventHandlers(self::EVENT_BEFORE_APPLY_PROVIDER_DELETE)) {
-            $this->trigger(self::EVENT_BEFORE_APPLY_PROVIDER_DELETE, new ProviderEvent([
+            $this->trigger(self::EVENT_BEFORE_APPLY_PROVIDER_DELETE, new DeleteProviderEvent([
                 'provider' => $provider,
             ]));
         }
@@ -392,7 +393,7 @@ class ProvidersService extends Component
         $this->providers = null;
 
         if ($this->hasEventHandlers(self::EVENT_AFTER_DELETE_PROVIDER)) {
-            $this->trigger(self::EVENT_AFTER_DELETE_PROVIDER, new ProviderEvent([
+            $this->trigger(self::EVENT_AFTER_DELETE_PROVIDER, new DeleteProviderEvent([
                 'provider' => $provider
             ]));
         }
