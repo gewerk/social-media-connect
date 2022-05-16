@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2 - 2022-05-17
+
+* Fix composing after localizing accounts
+
 ## 0.2.1 - 2022-05-16
 
 * Fix events when provider are saved or deleted
