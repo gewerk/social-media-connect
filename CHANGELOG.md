@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 - 2022-05-16
+
+* Fix events when provider are saved or deleted
+* Add mask icon for control panel navigation
+
 ## 0.2.0 - 2022-05-16
 
 * Fix sorting order for posts
