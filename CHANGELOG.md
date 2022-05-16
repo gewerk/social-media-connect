@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4 - 2022-05-17
+
+* Require Guzzle version 7 and PSR-7 adapter version 2
+
 ## 0.2.3 - 2022-05-17
 
 * Add missing http request factory
