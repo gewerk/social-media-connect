@@ -11,7 +11,7 @@ namespace Gewerk\SocialMediaConnect\Helper;
 use Craft;
 use Fusonic\OpenGraph\Consumer;
 use Fusonic\OpenGraph\Objects\ObjectBase;
-use GuzzleHttp\Psr7\HttpFactory;
+use Gewerk\SocialMediaConnect\Http\RequestFactory;
 use Psr\Http\Client\ClientExceptionInterface;
 
 /**
@@ -35,7 +35,7 @@ class OpenGraphHelper
             ],
         ]);
 
-        $httpRequestFactory = new HttpFactory();
+        $httpRequestFactory = new RequestFactory();
         $consumer = new Consumer($httpClient, $httpRequestFactory);
         $consumer->useFallbackMode = true;
 
