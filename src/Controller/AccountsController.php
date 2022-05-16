@@ -30,9 +30,10 @@ class AccountsController extends Controller
      * Connects an account
      *
      * @param string $provider
+     * @param int $siteId
      * @return Response
      */
-    public function actionConnect(string $provider): Response
+    public function actionConnect(string $provider, int $siteId): Response
     {
         // Get provider
         $provider = SocialMediaConnect::$plugin->getProviders()->getProviderByHandle($provider);
@@ -42,9 +43,18 @@ class AccountsController extends Controller
             throw new NotFoundHttpException();
         }
 
+        // Get site
+        $site = Craft::$app->getSites()->getSiteById($siteId);
+
+        if (!$site) {
+            throw new NotFoundHttpException();
+        }
+
+        Craft::$app->getSession()->set('socialMediaConnect:siteId', $site->id);
+
         // Save return to URL to session
         $redirectUri = Craft::$app->getRequest()->getValidatedBodyParam('redirectUri');
-        Craft::$app->session->set('redirectUri', $redirectUri);
+        Craft::$app->getSession()->set('socialMediaConnect:redirectUri', $redirectUri);
 
         // Handle connect
         return $provider->handleConnect($this->request);
@@ -65,8 +75,20 @@ class AccountsController extends Controller
             throw new NotFoundHttpException();
         }
 
+        // Get site ID from session
+        $siteId = Craft::$app->getSession()->get('socialMediaConnect:siteId', null);
+        if (!$siteId) {
+            throw new NotFoundHttpException();
+        }
+
+        // Resolve site
+        $site = Craft::$app->getSites()->getSiteById($siteId);
+        if (!$site) {
+            throw new NotFoundHttpException();
+        }
+
         // Get redirect URI from session
-        $redirectUri = Craft::$app->session->get('redirectUri', null) ?:
+        $redirectUri = Craft::$app->getSession()->get('socialMediaConnect:redirectUri', null) ?:
             UrlHelper::cpUrl('social-media-connect/accounts');
 
         // Get token from provider
@@ -93,7 +115,7 @@ class AccountsController extends Controller
             $token->id = $tokenRecord->id;
 
             // Handle accounts
-            $provider->handleAccounts($token);
+            $provider->handleAccounts($site, $token);
 
             $transaction->commit();
         } catch (CallbackException $e) {

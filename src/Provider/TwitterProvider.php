@@ -10,6 +10,7 @@ namespace Gewerk\SocialMediaConnect\Provider;
 
 use Craft;
 use craft\helpers\Cp;
+use craft\models\Site;
 use DateTime;
 use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Element\Post;
@@ -319,7 +320,7 @@ class TwitterProvider extends AbstractProvider implements
     /**
      * @inheritdoc
      */
-    public function handleAccounts(Token $token): void
+    public function handleAccounts(Site $site, Token $token): void
     {
         // Refresh access token if it expired
         if ($token->isExpired()) {
@@ -342,6 +343,7 @@ class TwitterProvider extends AbstractProvider implements
 
         // Find or create account
         $account = Account::find()
+            ->site($site)
             ->tokenId($token->id)
             ->identifier($userDetails['data']['id'])
             ->trashed(null)
@@ -349,6 +351,7 @@ class TwitterProvider extends AbstractProvider implements
             ->one() ?? new Account([
                 'tokenId' => $token->id,
                 'identifier' => $userDetails['data']['id'],
+                'siteId' => $site->id,
             ]);
 
         // Update account
@@ -405,6 +408,7 @@ class TwitterProvider extends AbstractProvider implements
                     'account' => $account,
                     'identifier' => $tweet['id'],
                     'type' => self::getPostPayloadClass(),
+                    'siteId' => $account->siteId,
                 ]);
 
             // Set post date

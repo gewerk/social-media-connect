@@ -8,6 +8,7 @@ module.exports = getConfig({
       'compose-share': './compose-share.js',
       'entry-share-counter': './entry-share-counter.js',
       'social-media-connect': './social-media-connect.scss',
+      'account-index': './account-index.js',
     },
   },
 });

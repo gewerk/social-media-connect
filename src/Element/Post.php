@@ -82,6 +82,14 @@ class Post extends Element
     /**
      * @inheritdoc
      */
+    public static function isLocalized(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function datetimeAttributes(): array
     {
         $attributes = parent::datetimeAttributes();
@@ -99,6 +107,20 @@ class Post extends Element
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getSupportedSites(): array
+    {
+        return [
+            [
+                'siteId' => $this->siteId,
+                'propagate' => true,
+                'enabledByDefault' => true,
+            ],
+        ];
+    }
+
+    /**
      * Sets account for this post
      *
      * @param Account $account
@@ -108,6 +130,7 @@ class Post extends Element
     {
         $this->accountId = $account->id;
         $this->account = $account;
+        $this->siteId = $account->siteId;
     }
 
     /**
@@ -120,7 +143,8 @@ class Post extends Element
         if ($this->account === null) {
             $this->account = Craft::$app->getElements()->getElementById(
                 $this->accountId,
-                Account::class
+                Account::class,
+                $this->siteId
             );
         }
 
@@ -212,9 +236,11 @@ class Post extends Element
         ];
 
         // Get accounts which support pulling
+        $siteIds = Craft::$app->getSites()->getEditableSiteIds();
+
         /** @var Account[] */
         $accounts = ArrayHelper::where(
-            Account::findAll(),
+            Account::find()->siteId($siteIds)->all(),
             'supportsPulling',
             true
         );
@@ -224,6 +250,7 @@ class Post extends Element
             $sources[] = [
                 'key' => $account->uid,
                 'label' => $account->name,
+                'sites' => [$account->siteId],
                 'criteria' => [
                     'accountId' => $account->id,
                 ],

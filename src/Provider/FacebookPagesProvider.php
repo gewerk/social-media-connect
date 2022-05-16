@@ -12,6 +12,7 @@ use Craft;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Cp;
 use craft\helpers\Html;
+use craft\models\Site;
 use DateTime;
 use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Element\Post;
@@ -274,7 +275,7 @@ class FacebookPagesProvider extends AbstractProvider implements
     /**
      * @inheritdoc
      */
-    public function handleAccounts(Token $token): void
+    public function handleAccounts(Site $site, Token $token): void
     {
         // Get page tokens
         $appSecretProof = AppSecretProof::create($this->clientSecret, $token->token);
@@ -290,6 +291,7 @@ class FacebookPagesProvider extends AbstractProvider implements
         foreach ($body['data'] as $pageToken) {
             // Find or create account
             $account = Account::find()
+                ->site($site)
                 ->tokenId($token->id)
                 ->identifier($pageToken['id'])
                 ->trashed(null)
@@ -297,6 +299,7 @@ class FacebookPagesProvider extends AbstractProvider implements
                 ->one() ?? new Account([
                     'tokenId' => $token->id,
                     'identifier' => $pageToken['id'],
+                    'siteId' => $site->id,
                 ]);
 
             // Get page details
@@ -393,6 +396,7 @@ class FacebookPagesProvider extends AbstractProvider implements
                     'account' => $account,
                     'identifier' => $feedPost['id'],
                     'type' => self::getPostPayloadClass(),
+                    'siteId' => $account->siteId,
                 ]);
 
             // Set post data

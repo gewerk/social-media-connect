@@ -11,6 +11,7 @@ namespace Gewerk\SocialMediaConnect\Provider;
 use Craft;
 use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
+use craft\models\Site;
 use craft\web\Request;
 use DateTime;
 use Gewerk\SocialMediaConnect\Element\Account;
@@ -185,7 +186,7 @@ class InstagramProvider extends AbstractProvider implements
     /**
      * @inheritdoc
      */
-    public function handleAccounts(Token $token): void
+    public function handleAccounts(Site $site, Token $token): void
     {
         // Query current token user
         $response = $this->getGuzzleClient()->get('me', [
@@ -200,6 +201,7 @@ class InstagramProvider extends AbstractProvider implements
 
         // Find or create account
         $account = Account::find()
+            ->site($site)
             ->tokenId($token->id)
             ->identifier($userDetails['id'])
             ->trashed(null)
@@ -207,6 +209,7 @@ class InstagramProvider extends AbstractProvider implements
             ->one() ?? new Account([
                 'tokenId' => $token->id,
                 'identifier' => $userDetails['id'],
+                'siteId' => $site->id,
             ]);
 
         // Update account
@@ -258,6 +261,7 @@ class InstagramProvider extends AbstractProvider implements
                     'account' => $account,
                     'identifier' => $feedPost['id'],
                     'type' => self::getPostPayloadClass(),
+                    'siteId' => $account->siteId,
                 ]);
 
             // Set post date

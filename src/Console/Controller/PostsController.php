@@ -34,7 +34,7 @@ class PostsController extends Controller
         // Get all accounts
         /** @var Account[] */
         $accounts = ArrayHelper::where(
-            Account::findAll(),
+            Account::find()->siteId('*')->all(),
             'supportsPulling',
             true
         );

@@ -34,6 +34,7 @@ class PostsService extends Component
 
         if ($provider instanceof PullPostsCapabilityInterface) {
             $provider->handlePosts($account, $limit);
+            return;
         }
 
         throw new MissingCapabilityException(

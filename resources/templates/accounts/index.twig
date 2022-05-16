@@ -1,6 +1,6 @@
 {% extends '_layouts/elementindex' %}
 
-{% do view.registerAssetBundle('Gewerk\\SocialMediaConnect\\AssetBundle\\SharedCssAssetBundle') %}
+{% do view.registerAssetBundle('Gewerk\\SocialMediaConnect\\AssetBundle\\AccountIndexAssetBundle') %}
 
 {% set crumbs = [
   {
@@ -12,19 +12,3 @@
 {% set title = 'Social Media Accounts' | t('social-media-connect') %}
 {% set elementType = 'Gewerk\\SocialMediaConnect\\Element\\Account' %}
 {% set selectedSubnavItem = 'accounts' %}
-
-{% block actionButton %}
-  <div>
-    <button id="sm-accounts-new-btn" type="button" class="btn menubtn sortmenubtn submit" data-icon="plus">{{ 'Add account' | t('social-media-connect') }}</button>
-
-    <div class="menu">
-      <ul class="padded">
-        {% for provider in craft.socialMediaConnect.getProviders() %}
-          <li><a href="{{ actionUrl('social-media-connect/accounts/connect', {
-            provider: provider.handle,
-          }) }}"><span class="smc-menu-icon" aria-hidden="true">{{ craft.socialMediaConnect.plugin.providers.getProviderIconSvg(provider) | raw }}</span>{{ provider.name }}</a></li>
-        {% endfor %}
-      </ul>
-    </div>
-  </div>
-{% endblock %}

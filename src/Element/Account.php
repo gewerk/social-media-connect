@@ -98,6 +98,14 @@ class Account extends Element
 
     /**
      * @inheritdoc
+     */
+    public static function isLocalized(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @inheritdoc
      * @return AccountQuery
      */
     public static function find(): ElementQueryInterface
@@ -138,6 +146,20 @@ class Account extends Element
         $names[] = 'connector';
 
         return $names;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSupportedSites(): array
+    {
+        return [
+            [
+                'siteId' => $this->siteId,
+                'propagate' => true,
+                'enabledByDefault' => true,
+            ],
+        ];
     }
 
     /**
