@@ -12,12 +12,14 @@ use Craft;
 use craft\elements\Entry;
 use craft\events\DraftEvent;
 use craft\events\ModelEvent;
+use craft\helpers\ArrayHelper;
 use craft\helpers\Db;
 use craft\helpers\ElementHelper;
 use craft\helpers\Json;
 use craft\web\View;
 use Gewerk\SocialMediaConnect\AssetBundle\ComposeShareAssetBundle;
 use Gewerk\SocialMediaConnect\AssetBundle\EntryShareCounterAssetBundle;
+use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Job\PublishShare;
 use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Record;
@@ -41,12 +43,25 @@ class EntryHooks
         /** @var Entry */
         $entry = $context['entry'];
 
+        /** @var Account[] */
+        $accounts = ArrayHelper::where(
+            Account::find()->siteId($entry->siteId)->all(),
+            'supportsComposing',
+            true
+        );
+
         // Build settings
         $settings = Json::encode([
             'entryId' => $entry->id,
             'canonicalId' => $entry->canonicalId,
             'siteId' => $entry->siteId,
             'draft' => $entry->getIsDraft() || $entry->getStatus() !== Entry::STATUS_LIVE,
+            'accounts' => array_map(fn (Account $account) => [
+                'id' => $account->id,
+                'name' => $account->name,
+                'provider' => $account->getProvider()->getName(),
+                'icon' => SocialMediaConnect::$plugin->getProviders()->getProviderIconSvg($account->getProvider()),
+            ], $accounts),
         ], JSON_UNESCAPED_UNICODE);
 
         // Load assets

@@ -110,6 +110,7 @@ class ComposeController extends Controller
 
         $account = Account::findOne([
             'id' => $this->request->getRequiredBodyParam('accountId'),
+            'siteId' => $this->request->getRequiredBodyParam('siteId'),
         ]);
 
         if (!$entry || !$account) {

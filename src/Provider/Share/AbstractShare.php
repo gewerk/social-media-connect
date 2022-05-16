@@ -152,9 +152,11 @@ abstract class AbstractShare extends SavableComponent
     public function getAccount(): Account
     {
         if ($this->account === null) {
-            $this->account = Account::findOne([
-                'id' => $this->accountId,
-            ]);
+            $this->account = Craft::$app->getElements()->getElementById(
+                $this->accountId,
+                Account::class,
+                $this->siteId
+            );
         }
 
         return $this->account;

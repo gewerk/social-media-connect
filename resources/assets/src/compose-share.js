@@ -1,4 +1,3 @@
-/* global socialMediaConnectComposingAccounts */
 import './compose-share.scss';
 
 // Add extension
@@ -11,7 +10,7 @@ Craft.SocialMediaConnect.ComposeShare = Garnish.Base.extend({
   init(id, settings) {
     this.id = id;
     this.settings = settings;
-    this.accounts = socialMediaConnectComposingAccounts || [];
+    this.accounts = this.settings.accounts || [];
     this.currentAccount = this.accounts[0] || null;
     this.draft = !!this.settings.draft;
     this.params = {
