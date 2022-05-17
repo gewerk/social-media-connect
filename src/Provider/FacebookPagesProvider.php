@@ -168,7 +168,7 @@ class FacebookPagesProvider extends AbstractProvider implements
             $account = $share->getAccount();
             $token = $account->settings['access_token'];
             $endpoint = sprintf('/%d/feed', $account->identifier);
-            $appSecretProof = AppSecretProof::create($this->clientSecret, $token);
+            $appSecretProof = AppSecretProof::create($this->getClientSecret(), $token);
 
             $response = $this->getGuzzleClient()->post($endpoint, [
                 'json' => [
@@ -240,7 +240,7 @@ class FacebookPagesProvider extends AbstractProvider implements
     public function getIdentifier(Token $token): string
     {
         // Query current token user
-        $appSecretProof = AppSecretProof::create($this->clientSecret, $token->token);
+        $appSecretProof = AppSecretProof::create($this->getClientSecret(), $token->token);
         $response = $this->getGuzzleClient()->get('me', [
             'query' => [
                 'appsecret_proof' => $appSecretProof,
@@ -278,7 +278,7 @@ class FacebookPagesProvider extends AbstractProvider implements
     public function handleAccounts(Site $site, Token $token): void
     {
         // Get page tokens
-        $appSecretProof = AppSecretProof::create($this->clientSecret, $token->token);
+        $appSecretProof = AppSecretProof::create($this->getClientSecret(), $token->token);
         $response = $this->getGuzzleClient()->get('me/accounts', [
             'query' => [
                 'appsecret_proof' => $appSecretProof,
@@ -303,7 +303,7 @@ class FacebookPagesProvider extends AbstractProvider implements
                 ]);
 
             // Get page details
-            $appSecretProof = AppSecretProof::create($this->clientSecret, $pageToken['access_token']);
+            $appSecretProof = AppSecretProof::create($this->getClientSecret(), $pageToken['access_token']);
             $response = $this->getGuzzleClient()->get($pageToken['id'], [
                 'query' => [
                     'appsecret_proof' => $appSecretProof,
@@ -344,7 +344,7 @@ class FacebookPagesProvider extends AbstractProvider implements
     {
         // Get posts for this account
         $token = $account->settings['access_token'];
-        $appSecretProof = AppSecretProof::create($this->clientSecret, $token);
+        $appSecretProof = AppSecretProof::create($this->getClientSecret(), $token);
         $response = $this->getGuzzleClient()->get("{$account->identifier}/posts", [
             'query' => [
                 'locale' => 'de',

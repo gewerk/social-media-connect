@@ -150,7 +150,7 @@ class TwitterProvider extends AbstractProvider implements
             $provider = $this->getConfiguredProvider();
             $refreshedAccessToken = $provider->getAccessToken('refresh_token', [
                 'refresh_token' => $token->refreshToken,
-                'client_id' => $this->clientId,
+                'client_id' => $this->getClientId(),
             ]);
 
             $token->token = $refreshedAccessToken->getToken();
