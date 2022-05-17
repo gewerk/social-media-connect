@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.6 - 2022-05-17
+
+* Fix broken account index
+
 ## 0.2.5 - 2022-05-17
 
 * Improve add account button
