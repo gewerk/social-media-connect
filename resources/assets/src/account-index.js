@@ -27,7 +27,7 @@ Craft.SocialMediaConnect.AccountIndex = Craft.BaseElementIndex.extend({
 
     this.$newEntryBtnGroup = $('<div class="btngroup submit"/>');
 
-    const selectedProviderHandle = this.$source.data('key');
+    const selectedProviderHandle = this.$source?.data('key') ?? '*';
     const providers = socialMediaConnectProviders || [];
 
     const selectedProvider =
