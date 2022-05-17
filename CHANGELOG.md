@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.5 - 2022-05-17
+
+* Improve add account button
+
 ## 0.2.4 - 2022-05-17
 
 * Require Guzzle version 7 and PSR-7 adapter version 2
