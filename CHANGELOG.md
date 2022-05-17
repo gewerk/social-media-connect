@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.7 - 2022-05-17
+
+* Use always resolved client id and secret
+
 ## 0.2.6 - 2022-05-17
 
 * Fix broken account index
