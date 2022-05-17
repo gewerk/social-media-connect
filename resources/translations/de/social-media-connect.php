@@ -73,4 +73,5 @@ return [
     'Type' => 'Typ',
     'Enabled' => 'Aktiviert',
     'Disabled' => 'Deaktiviert',
+    'Add {provider} account' => 'Konto für {provider} hinzufügen',
 ];

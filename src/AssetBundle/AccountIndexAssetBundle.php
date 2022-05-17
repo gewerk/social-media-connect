@@ -54,6 +54,7 @@ class AccountIndexAssetBundle extends AssetBundle
         // Plugin translations
         $view->registerTranslations('social-media-connect', [
             'Add account',
+            'Add {provider} account',
         ]);
     }
 }
