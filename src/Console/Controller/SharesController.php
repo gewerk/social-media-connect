@@ -8,7 +8,9 @@
 
 namespace Gewerk\SocialMediaConnect\Console\Controller;
 
+use Craft;
 use craft\console\Controller;
+use Gewerk\SocialMediaConnect\Job\PublishShare;
 use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use yii\console\ExitCode;
 
@@ -20,13 +22,41 @@ use yii\console\ExitCode;
 class SharesController extends Controller
 {
     /**
+     * @var bool
+     */
+    public $dryRun = false;
+
+    /**
+     * @inheritdoc
+     */
+    public function options($actionID): array
+    {
+        return ['dryRun'];
+    }
+
+    /**
      * Publishes shares
      *
      * @return int
      */
-    public function actionPublish()
+    public function actionPublish(): int
     {
-        SocialMediaConnect::$plugin->getShare()->publishSharesFromPendingEntries();
+        // Get all unpublished shares
+        $this->stdout('Publishing shares ... ' . PHP_EOL);
+        $unpublishedShares = SocialMediaConnect::$plugin->getShare()->getUnpublishedShares();
+
+        // Create publish jobs
+        foreach ($unpublishedShares as $unpublishedShare) {
+            $accountName = $unpublishedShare->getAccount()->name;
+            $this->stdout("- Share to {$accountName} for entry #{$unpublishedShare->entryId}" . PHP_EOL);
+
+            if (!$this->dryRun) {
+                Craft::$app->getQueue()->push(new PublishShare([
+                    'shareId' => $unpublishedShare->id,
+                    'accountName' => $unpublishedShare->getAccount()->name,
+                ]));
+            }
+        }
 
         return ExitCode::OK;
     }

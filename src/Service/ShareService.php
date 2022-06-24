@@ -20,7 +20,6 @@ use DateTime;
 use Fusonic\OpenGraph\Objects\ObjectBase;
 use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Helper\OpenGraphHelper;
-use Gewerk\SocialMediaConnect\Job\PublishShare;
 use Gewerk\SocialMediaConnect\Provider\Capability\ComposingCapabilityInterface;
 use Gewerk\SocialMediaConnect\Provider\Share\AbstractShare;
 use Gewerk\SocialMediaConnect\Record;
@@ -188,15 +187,15 @@ class ShareService extends Component
     }
 
     /**
-     * Publishes shares from pending entries after going live
+     * Returns all unpublished shares
      *
-     * @return void
+     * @return AbstractShare[]
      */
-    public function publishSharesFromPendingEntries(): void
+    public function getUnpublishedShares(): array
     {
         // Check for any unpublished shares
         $now = Db::prepareDateForDb(new DateTime());
-        $unpublishedShares = $this->getShareBaseQuery()
+        $unpublishedShareRecords = $this->getShareBaseQuery()
             ->innerJoin(
                 Table::ELEMENTS_SITES,
                 [
@@ -213,9 +212,6 @@ class ShareService extends Component
                 Table::ENTRIES,
                 '[[entries.id]] = [[elements.id]]',
             )
-            ->addSelect([
-                '[[social_media_connect_accounts.name]] AS accountName'
-            ])
             ->where([
                 '[[social_media_connect_shares.publishWithEntry]]' => true,
                 '[[social_media_connect_shares.success]]' => null,
@@ -235,12 +231,16 @@ class ShareService extends Component
             ])
             ->all();
 
-        foreach ($unpublishedShares as $unpublishedShare) {
-            Craft::$app->getQueue()->push(new PublishShare([
-                'shareId' => $unpublishedShare['id'],
-                'accountName' => $unpublishedShare['accountName'],
-            ]));
-        }
+        return array_map(function ($shareRecord) {
+            // Resolve share type
+            $shareRecord['type'] = $shareRecord['type']::getShareModelClass();
+
+            /** @var AbstractShare $share */
+            return ComponentHelper::createComponent(
+                $shareRecord,
+                AbstractShare::class
+            );
+        }, $unpublishedShareRecords);
     }
 
     /**
