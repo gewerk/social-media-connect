@@ -10,6 +10,7 @@ namespace Gewerk\SocialMediaConnect\Service;
 
 use craft\base\Component;
 use craft\db\Query;
+use craft\helpers\DateTimeHelper;
 use craft\helpers\Db;
 use Gewerk\SocialMediaConnect\Element\Account;
 use Gewerk\SocialMediaConnect\Exception\MissingCapabilityException;
@@ -64,34 +65,14 @@ class TokensService extends Component
      */
     public function getUsedTokens(): array
     {
-        $tokenRecords = (new Query())
-            ->select([
-                '[[social_media_connect_tokens.id]]',
-                '[[social_media_connect_tokens.providerId]]',
-                '[[social_media_connect_tokens.identifier]]',
-                '[[social_media_connect_tokens.token]]',
-                '[[social_media_connect_tokens.refreshToken]]',
-                '[[social_media_connect_tokens.scopes]]',
-                '[[social_media_connect_tokens.expiryDate]]',
-                '[[social_media_connect_tokens.dateUpdated]]',
-                '[[social_media_connect_tokens.dateCreated]]',
-                '[[social_media_connect_tokens.uid]]',
-            ])
-            ->from(Record\Token::tableName())
-            ->leftJoin(
-                Record\Account::tableName(),
-                '[[social_media_connect_accounts.tokenId]] = [[social_media_connect_tokens.id]]'
-            )
-            ->groupBy('[[social_media_connect_accounts.tokenId]]')
+        $tokenRecords = $this->tokenBaseQuery()
+            ->groupBy('[[accounts.tokenId]]')
             ->all();
 
         $tokens = [];
 
         foreach ($tokenRecords as $tokenRecord) {
-            $token = new Token($tokenRecord);
-            $token->afterFind();
-
-            $tokens[] = $token;
+            $tokens[] = $this->populateToken($tokenRecord);
         }
 
         return $tokens;
@@ -110,14 +91,63 @@ class TokensService extends Component
             throw new InvalidTokenIdException(null);
         }
 
-        $record = Record\Token::findOne($account->tokenId);
+        $tokenRecord = $this->tokenBaseQuery()
+            ->where(['[[tokens.id]]' => $account->tokenId])
+            ->one();
 
-        if (!$record) {
+        if (!$tokenRecord) {
             throw new InvalidTokenIdException($account->tokenId);
         }
 
-        $token = new Token($record);
-        $token->afterFind();
+        return $this->populateToken($tokenRecord);
+    }
+
+    /**
+     * Base query for token
+     *
+     * @return Query
+     */
+    private function tokenBaseQuery(): Query
+    {
+        return (new Query())
+            ->select([
+                '[[tokens.id]]',
+                '[[tokens.providerId]]',
+                '[[tokens.identifier]]',
+                '[[tokens.token]]',
+                '[[tokens.refreshToken]]',
+                '[[tokens.scopes]]',
+                '[[tokens.expiryDate]]',
+                '[[tokens.dateUpdated]]',
+                '[[tokens.dateCreated]]',
+                '[[tokens.uid]]',
+            ])
+            ->from(['tokens' => Record\Token::tableName()])
+            ->leftJoin(
+                ['accounts' => Record\Account::tableName()],
+                '[[accounts.tokenId]] = [[tokens.id]]'
+            );
+    }
+
+    /**
+     * Populates token model
+     *
+     * @param array $tokenRecord
+     * @return Token
+     */
+    private function populateToken(array $tokenRecord): Token
+    {
+        $token = new Token();
+        $token->id = (int) $tokenRecord['id'];
+        $token->providerId = (int) $tokenRecord['providerId'];
+        $token->identifier = $tokenRecord['identifier'];
+        $token->token = $tokenRecord['token'];
+        $token->refreshToken = $tokenRecord['refreshToken'];
+        $token->scopes = explode(',', $tokenRecord['scopes']);
+        $token->expiryDate = DateTimeHelper::toDateTime($tokenRecord['expiryDate']);
+        $token->dateUpdated = DateTimeHelper::toDateTime($tokenRecord['dateUpdated']);
+        $token->dateCreated = DateTimeHelper::toDateTime($tokenRecord['dateCreated']);
+        $token->refreshToken = $tokenRecord['uid'];
 
         return $token;
     }

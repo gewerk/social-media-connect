@@ -12,7 +12,6 @@ use craft\base\Model;
 use DateTime;
 use Gewerk\SocialMediaConnect\SocialMediaConnect;
 use Gewerk\SocialMediaConnect\Provider\ProviderInterface;
-use yii\behaviors\AttributeTypecastBehavior;
 
 /**
  * Token model
@@ -80,30 +79,6 @@ class Token extends Model
      * @var ProviderInterface
      */
     private $provider;
-
-    /**
-     * @inheritdoc
-     */
-    public function behaviors(): array
-    {
-        $behaviors = parent::behaviors();
-
-        $behaviors['typecast'] = [
-            'class' => AttributeTypecastBehavior::class,
-            'typecastAfterFind' => true,
-            'attributeTypes' => [
-                'id' => AttributeTypecastBehavior::TYPE_INTEGER,
-                'providerId' => AttributeTypecastBehavior::TYPE_INTEGER,
-                'identifier' => AttributeTypecastBehavior::TYPE_STRING,
-                'token' => AttributeTypecastBehavior::TYPE_STRING,
-                'refreshToken' => AttributeTypecastBehavior::TYPE_STRING,
-                'scopes' => fn ($value) => !is_array($value) ? explode(',', (string) $value) : $value,
-                'uid' => AttributeTypecastBehavior::TYPE_STRING,
-            ],
-        ];
-
-        return $behaviors;
-    }
 
     /**
      * @inheritdoc

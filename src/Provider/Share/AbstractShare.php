@@ -12,11 +12,9 @@ use Craft;
 use craft\base\SavableComponent;
 use craft\elements\Entry;
 use craft\helpers\DateTimeHelper;
-use craft\helpers\Json;
 use craft\validators\DateTimeValidator;
 use DateTime;
 use Gewerk\SocialMediaConnect\Element\Account;
-use yii\behaviors\AttributeTypecastBehavior;
 
 /**
  * Abstract base class for composed social media posts
@@ -98,7 +96,17 @@ abstract class AbstractShare extends SavableComponent
             }
         }
 
-        $this->typecastAttributes();
+        foreach ($this->intAttributes() as $attribute) {
+            if ($this->$attribute !== null) {
+                $this->$attribute = intval($this->$attribute);
+            }
+        }
+
+        foreach ($this->boolAttributes() as $attribute) {
+            if ($this->$attribute !== null) {
+                $this->$attribute = boolval($this->$attribute);
+            }
+        }
     }
 
     /**
@@ -163,31 +171,6 @@ abstract class AbstractShare extends SavableComponent
     }
 
     /**
-     * @inheritdoc
-     */
-    public function behaviors(): array
-    {
-        $behaviors = parent::behaviors();
-
-        $behaviors['typecast'] = [
-            'class' => AttributeTypecastBehavior::class,
-            'attributeTypes' => [
-                'id' => AttributeTypecastBehavior::TYPE_INTEGER,
-                'entryId' => AttributeTypecastBehavior::TYPE_INTEGER,
-                'siteId' => AttributeTypecastBehavior::TYPE_INTEGER,
-                'accountId' => AttributeTypecastBehavior::TYPE_INTEGER,
-                'publishWithEntry' => AttributeTypecastBehavior::TYPE_BOOLEAN,
-                'success' => AttributeTypecastBehavior::TYPE_BOOLEAN,
-                'response' => fn ($value) => Json::decodeIfJson($value),
-                'postUrl' => AttributeTypecastBehavior::TYPE_STRING,
-                'uid' => AttributeTypecastBehavior::TYPE_STRING,
-            ],
-        ];
-
-        return $behaviors;
-    }
-
-    /**
      * Returns the names of any attributes that should hold [[\DateTime]] values.
      *
      * @return string[]
@@ -199,6 +182,34 @@ abstract class AbstractShare extends SavableComponent
         $attributes[] = 'postedAt';
         $attributes[] = 'dateCreated';
         $attributes[] = 'dateUpdated';
+
+        return $attributes;
+    }
+
+    /**
+     * Returns the names of any attributes that should be int values.
+     *
+     * @return string[]
+     */
+    public function intAttributes(): array
+    {
+        $attributes = [];
+        $attributes[] = 'entryId';
+        $attributes[] = 'siteId';
+        $attributes[] = 'accountId';
+
+        return $attributes;
+    }
+
+    /**
+     * Returns the names of any attributes that should be bool values.
+     *
+     * @return string[]
+     */
+    public function boolAttributes(): array
+    {
+        $attributes = [];
+        $attributes[] = 'success';
 
         return $attributes;
     }
