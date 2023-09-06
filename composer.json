@@ -2,7 +2,7 @@
   "name": "gewerk/social-media-connect",
   "description": "Integrates Social Media services into your sites for publishing and displaying posts",
   "type": "craft-plugin",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "license": "proprietary",
   "authors": [
     {

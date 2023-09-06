@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.8 - 2023-09-06
+
+* Remove changed AttributeTypecastBehavior
+* Fix exception on posts with deleted account
+* Add --dry-run option to shares/publish command
+
 ## 0.2.7 - 2022-05-17
 
 * Use always resolved client id and secret
