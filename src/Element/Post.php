@@ -21,6 +21,7 @@ use Gewerk\SocialMediaConnect\Helper\ElementIndexHelper;
 use Gewerk\SocialMediaConnect\Provider\PostPayload\AbstractPostPayload;
 use Gewerk\SocialMediaConnect\Record\Post as PostRecord;
 use yii\base\Exception;
+use yii\base\InvalidConfigException;
 use yii\db\Expression;
 
 /**
@@ -144,8 +145,13 @@ class Post extends Element
             $this->account = Craft::$app->getElements()->getElementById(
                 $this->accountId,
                 Account::class,
-                $this->siteId
+                $this->siteId,
+                ['status' => null, 'trashed' => null]
             );
+
+            if (!$this->account) {
+                throw new InvalidConfigException("Account ID {$this->accountId} for post is invalid");
+            }
         }
 
         return $this->account;
